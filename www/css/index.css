@@ -1,0 +1,296 @@
+
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+}
+
+body {
+    -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+    -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
+    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
+/*
+    background-color:#E4E4E4;
+    background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+    background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+    background-image:-ms-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+    background-image:-webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, #A7A7A7),
+        color-stop(0.51, #E4E4E4)
+    );
+*/
+    
+    background: #062600;   
+background: -webkit-linear-gradient(#2e602d 0%,  #697f55 100%);
+background: -o-linear-gradient(#2e602d 0%, #697f55 100%);
+background: linear-gradient(#2e602d 0%, #697f55 100%); 
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2e602d', endColorstr='#697f55',GradientType=0 );
+    
+    
+/*    background-color: #4C3327;*/
+    background-attachment:fixed;
+    font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
+    font-size:12px;
+    height:100%;
+    margin:0px;
+    padding:0px;
+/*    text-transform:uppercase;*/
+    width:100%;
+    
+    
+    
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Portrait layout (default) */
+
+.app {
+    background:url(../img/logo.png) no-repeat center top; 
+    position:absolute;             
+    left:50%;
+    top:50%;
+    height:50px;                  
+    width:225px;                   
+    text-align:center;
+    padding:180px 0px 0px 0px;     text) 
+    margin:-115px 0px 0px -112px;  
+    display: none;
+} 
+
+/* Landscape layout (with min-width) */
+@media screen and (min-aspect-ratio: 1/1) and (min-width:400px) {
+    .app {
+        background-position:left center;
+        padding:75px 0px 75px 170px;  /* padding-top + padding-bottom + text area = image height */
+        margin:-90px 0px 0px -198px;  /* offset vertical: half of image height */
+                                      /* offset horizontal: half of image width and text area width */
+    }
+}
+
+
+
+/*
+.event {
+    border-radius:4px;
+    -webkit-border-radius:4px;
+    color:#FFFFFF;
+    font-size:12px;
+    margin:0px 30px;
+    padding:2px 0px;
+}
+
+.event.listening {
+    background-color:#333333;
+    display:block;
+}
+
+.event.received {
+    background-color:#4B946A;
+    display:none;
+}
+
+@keyframes fade {
+    from { opacity: 1.0; }
+    50% { opacity: 0.4; }
+    to { opacity: 1.0; }
+}
+ 
+@-webkit-keyframes fade {
+    from { opacity: 1.0; }
+    50% { opacity: 0.4; }
+    to { opacity: 1.0; }
+}
+ 
+.blink {
+    animation:fade 3000ms infinite;
+    -webkit-animation:fade 3000ms infinite;
+}
+*/
+
+
+
+
+h1 {
+    font-size: 1.5rem;
+    font-weight:normal;
+    overflow:visible;
+    text-align:center;
+    color:#BA9A21;
+    font-family: "Trebuchet MS", "Helvetica CY", sans-serif;
+    text-transform:uppercase;
+    font-weight: 900;
+    margin: 0;
+}
+
+
+
+
+.page_title{
+    margin: 2rem;
+    margin-bottom: 1rem;
+}
+
+.tasks-container{
+/*
+     display: flex;
+   justify-content: center;
+   align-items: center;
+*/
+    -webkit-box-flex: 1;
+    width: 100%;
+    box-sizing: content-box;
+    display: block!important;
+       
+}
+
+.tasks-center{
+/*    width:20rem;*/
+    width:80%;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.task{
+    margin: 2rem;
+    padding: 1.5rem;
+    background: rgba(0, 50, 50, 0.4);
+}
+
+.task-content{
+    display: inline-block;
+    width:100%;
+    font-size: 1rem;
+    color: white;
+    font-family: "Trebuchet MS", "Helvetica CY", sans-serif;
+}
+
+.subj-name{
+    margin: 0;
+}
+
+.deadline{
+    text-align: right;
+    margin: 0;
+    margin-top:1rem;
+    opacity: 0.5;
+}
+
+.menu-button{
+    width: 3rem;
+    height: 3rem;
+    margin-left: 80vw;
+    margin-top: 1rem;
+    background: url("../img/menu.png");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+.menu{
+    
+    
+    position: fixed!important;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding-top: 5rem;
+    padding-right: 1rem!important;
+    padding-left: 1rem!important;
+    display: none;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    background: #697f55;
+/*
+    display: none;
+    position: fixed!important;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    padding-top: 5rem;
+    background: #697f55;
+     -webkit-box-flex: 1;
+    box-sizing: content-box;
+    flex-direction: column;
+    height: 100%;
+*/
+    
+}
+
+.menu a{
+    text-decoration: none;
+}
+
+.menu-row{
+    display: flex;
+    flex-direction: row;
+    background: rgba(0,50,50, 0.2);
+    height: 2rem;
+    margin-top: 1rem;
+    padding: 2rem 5rem 1rem 2rem;
+    position: relative;
+    color: white;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.close-menu{
+    color: black;
+    font-size: 2rem;
+    text-decoration: none;
+    position: absolute;
+    top:1.5rem;
+    right: 3rem;
+}
+
+
+
+
+.close-content-box{
+    font-size: 1.5rem;
+    text-align: right;
+    text-decoration: none;
+    padding-top: 1.5rem;
+    padding-right: 2rem;
+    top:1.5rem;
+    right: 2rem;
+}
+
+.close-content-box a{
+     text-decoration: none;
+    color: white;
+}
+
+.content-box-container{
+    display:none;
+    position: fixed!important;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(50, 60, 50, 0.7);
+}
+
+.content-box{
+     position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    height: 80%;
+    width:80%;
+    background: rgba(5, 10, 5, 1);
+}
+
+.task-text{
+    padding: 3rem;
+    padding-top: 0;
+    color:white;
+}

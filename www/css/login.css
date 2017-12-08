@@ -1,0 +1,42 @@
+.form{
+    text-align: center;
+}
+
+.login-form{
+    width:50%;
+    box-sizing: border-box;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+
+input{
+    font-size: 1rem;
+    display: block;
+    padding: 0.5rem;
+    margin-top: 3rem;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    width:100%;
+    font-family: "Trebuchet MS", "Helvetica CY", sans-serif;
+}
+
+.input-submit{
+    margin: 3rem;
+    font-size: 1rem;
+    font-family: "Trebuchet MS", "Helvetica CY", sans-serif;
+    width:70%;
+    height: 3rem;
+    text-align: center;
+    display: inline-block;
+     position: relative;
+}
+
+.wide {
+  overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}

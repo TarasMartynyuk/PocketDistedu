@@ -3,15 +3,36 @@
 function CacheManager() {
     // for testing, place them in root;
     this.cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
+    // this.cacheRootPath = ;
     this.weekDirName = "Week/";
-    this.recoursesPath = this.cacheRootPath + this.weekDirName + "Resources/";
-    this.assignmentsPath = this.cacheRootPath + this.weekDirName + "Assignments/";
+
+    var resourcesDirName = "Resources/";
+    var assignmentsDirName = "Assignments/";
+
+    this.recoursesPath = this.cacheRootPath + this.weekDirName + resourcesDirName;
+    this.assignmentsPath = this.cacheRootPath + this.weekDirName + assignmentsDirName;
     
-    CacheManager.prototype.checkIfCachePresent(this.cacheRootPath,  function (dir) {
-        console.log("found directory : " + dir.toURL());
-        }, function(error) {
-             console.log("NOT found directory : " + cacheRootPath);
+    // the variable created with var will be visible in callback scope
+    var instance = this;
+
+    // var test = "NOT MEANT TO BE FOUND";
+    // var test = this.cacheRootPath + this.weekDirName ;
+    var test = this.assignmentsPath ;
+    
+    
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
+        
+        window.resolveLocalFileSystemURL(test, function (dir) {
+
+            console.log("found directory : " + dir.toURL());
+            }, function(error) {
+                console.log("NOT found directory : " + test);
+                // instance.createCacheDirs(instance, resourcesDirName, assignmentsDirName);
+            },
+        function(error) {
+            console.log(error);
         });
+    });
         // console.log(fs.root.toInternalURL());
         
             // fs.root.getFile("newPersistentFile.txt", { create: true, exclusive: false }, function (fileEntry) {
@@ -42,38 +63,30 @@ function CacheManager() {
 
 CacheManager.prototype = {
 
-    init : function (fsRoot){
-        // this.createDirectory(fsRoot, "weekDir");
-    },
     //#region helpers
+    createCacheDirs : function(instance, resourcesDirName, assignmentsDirName) {
+        console.log("createCacheDirs\n\n");
+        // console.log(instance.cacheRootPath);
 
-    // calls onPresentCallback if distedu files are already on disk,
-    // else onAbsentCallback
-    checkIfCachePresent : function(cacheRootPath, onPresentCallback, onAbsentCallback) {
+        window.resolveLocalFileSystemURL(instance.cacheRootPath, function (rootDir) {
+            console.log("found directory : " + rootDir.toURL());
+            instance.createDirectory(rootDir, instance.weekDirName, function(weekDir){
+                console.log(weekDir.toURL());
+                instance.createDirectory(weekDir, resourcesDirName);
+                instance.createDirectory(weekDir, assignmentsDirName);
 
-        window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
+            });
             
-            window.resolveLocalFileSystemURL(cacheRootPath, onPresentCallback, onAbsentCallback);
-            
-        }, function(error) {
-            console.log(error);
-        });
+
+        }, instance.onLocalUrlError(instance.cacheRootPath));
     },
 
-    createCacheDirs : function() {
-        window.resolveLocalFileSystemURL(fs.root.toURL() + "Week", function (dir) {
-            console.log("found directory : " + dir.toURL());
-
-
-        }, function(error) {
-            console.log("NOT found directory : " + fs.root.toURL() + "Week");
-        });
-    },
-
-    createDirectory : function (rootDirEntry, newDirName) {
-        rootDirEntry.getDirectory(newDirName, { create: true }, function (dirEntry) {
+    // onCreatedCallback recieves created dir as argument
+    createDirectory : function (rootDirEntry, newDirName, onCreatedCallback) {
+        onCreatedCallback = onCreatedCallback || function(dirEntry) {
             console.log('created dir ' + dirEntry.toURL());
-        }, this.onErrorGetDir(newDirName));
+        };
+        rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, this.onErrorGetDir(newDirName));
     },
 
     //#region error handlers
@@ -96,7 +109,6 @@ CacheManager.prototype = {
         }
     }
     //#endregion
-    
     //#endregion
 }
 

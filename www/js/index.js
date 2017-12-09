@@ -35,6 +35,7 @@ var app = {
     onDeviceReady: function() {
         // app.receivedEvent('deviceready');
         cacheManager = new CacheManager();
+        Log("WORKS");
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

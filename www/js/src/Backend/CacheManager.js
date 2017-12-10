@@ -31,8 +31,12 @@ function initialize() {
 
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
         
-        window.resolveLocalFileSystemURL(test, function (dir) {
+        log('searching for : applicationStorageDirectory : ' + cordova.file.applicationStorageDirectory);
+        window.resolveLocalFileSystemURL(cordova.file.applicationStorageDirectory, function (dir) {
             log("found directory : " + dir.toURL());
+
+            create
+
             }, function(error) {
                 log("NOT found directory : " + "applicationStorageDirectory");
                 // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
@@ -45,7 +49,9 @@ function initialize() {
     test = cordova.file.externalApplicationStorageDirectory;
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
         
-        window.resolveLocalFileSystemURL(test, function (dir) {
+        log('searching for : externalApplicationStorageDirectory : ' + cordova.file.externalApplicationStorageDirectory);
+        
+        window.resolveLocalFileSystemURL(cordova.file.externalApplicationStorageDirectory, function (dir) {
             log("found directory : " + dir.toURL());
             }, function(error) {
                 log("NOT found directory : " + "externalApplicationStorageDirectory");
@@ -59,9 +65,11 @@ function initialize() {
     
     test = cordova.file.dataDirectory;
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
-        
-        window.resolveLocalFileSystemURL(test, function (dir) {
+
+            log('searching for : dataDirectory : ' + cordova.file.dataDirectory);
+        window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dir) {
             log("found directory : " + dir.toURL());
+            
             }, function(error) {
                 log("NOT found directory : " + "dataDirectory");
                 // createCacheDirs(instance, resourcesDirName, assignmentsDirName);

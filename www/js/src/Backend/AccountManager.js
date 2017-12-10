@@ -1,8 +1,24 @@
 
 var  loginPassWordFileName = "loginCredentials.txt";
 
+// successCallback recieves {login, password} as argument
+function passwordValid(successCallback, errorCallback){
+    // first check if file exists
+    window.requestFileSystem(window.PERSISTENT, 5 * 1024, function(fs){
+
+        window.resolveLocalFileSystemURL(PathLookup.cacheRootPath, function(cacheRootDir){
+
+
+        }, function(error){
+            onLocalUrlError()
+        });
+            
+
+    }, errorCallback("could not request filesystem");
+}
+
 function rewriteLoginPassWord(newLogin, newPassword) {
-    var logPasName = this.loginPassWordFileName;
+
     window.requestFileSystem(window.PERSISTENT, 5 * 1024, function(fs){
         var logPassDirPath = fs.root
         window.resolveLocalFileSystemURL(PathLookup.cacheRootPath, function(cacheRootDir){
@@ -13,6 +29,19 @@ function rewriteLoginPassWord(newLogin, newPassword) {
                 writeToFile(file, new Blob([newLogin + "\n" + newPassword]));
                 
             }, onLocalUrlError(logPasName));
+        }, onLocalUrlError(PathLookup.cacheRootPath));
+    }), function(error){
+        console.error(error);
+    }
+}
+
+function tryGetLogPassFile(success, failure){
+    window.requestFileSystem(window.PERSISTENT, 5 * 1024, function(fs){
+        var logPassDirPath = fs.root
+        window.resolveLocalFileSystemURL(PathLookup.cacheRootPath, function(cacheRootDir){
+            
+            cacheRootDir.getFile(logPasName, {create : false}, success(file)
+            , onLocalUrlError(logPasName));
         }, onLocalUrlError(PathLookup.cacheRootPath));
     }), function(error){
         console.error(error);

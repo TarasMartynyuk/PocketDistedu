@@ -1,24 +1,17 @@
 // handles distedu data storage, removal
 // and data requests
-function CacheManager() {
-    // for testing, place them in root;
-    this.cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
-    // this.cacheRootPath = ;
-    this.weekDirName = "Week/";
-
+function CacheManager(weekNumber) {
     var resourcesDirName = "Resources/";
     var assignmentsDirName = "Assignments/";
 
     this.recoursesPath = this.cacheRootPath + this.weekDirName + resourcesDirName;
     this.assignmentsPath = this.cacheRootPath + this.weekDirName + assignmentsDirName;
-    
     // the variable created with var will be visible in callback scope
     var instance = this;
-
+    var dateChecker = new DateChecker();
     // var test = "NOT MEANT TO BE FOUND";
     // var test = this.cacheRootPath + this.weekDirName ;
     var test = this.assignmentsPath ;
-    
     
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
         
@@ -62,13 +55,17 @@ function CacheManager() {
 }
 
 CacheManager.prototype = {
+    asd : new AccountManager(),
+    // for testing, place them in root;
+    cacheRootPath : "filesystem:http://192.168.0.103:3000/persistent/",
+    weekDirName : "Week/",
 
     //#region helpers
     createCacheDirs : function(instance, resourcesDirName, assignmentsDirName) {
         console.log("createCacheDirs\n\n");
-        // console.log(instance.cacheRootPath);
+        // console.log(PathLookup.cacheRootPath);
 
-        window.resolveLocalFileSystemURL(instance.cacheRootPath, function (rootDir) {
+        window.resolveLocalFileSystemURL(PathLookup.cacheRootPath, function (rootDir) {
             console.log("found directory : " + rootDir.toURL());
             instance.createDirectory(rootDir, instance.weekDirName, function(weekDir){
                 console.log(weekDir.toURL());
@@ -78,7 +75,7 @@ CacheManager.prototype = {
             });
             
 
-        }, instance.onLocalUrlError(instance.cacheRootPath));
+        }, onLocalUrlError(PathLookup.cacheRootPath));
     },
 
     // onCreatedCallback recieves created dir as argument
@@ -89,26 +86,6 @@ CacheManager.prototype = {
         rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, this.onErrorGetDir(newDirName));
     },
 
-    //#region error handlers
-    onLocalUrlError : function (URL) {
-        return function(error) {
-            console.error(" error resolving URL: " + URL);
-            console.error("returned such error: " + error);
-        }
-    },
-
-    onErrorGetDir : function (newDirName) {
-        return function(error) {
-            console.error('Error getting dir ' + newDirName + "\n" + error);
-        }
-    },
-
-    onErrorCreateFile : function (newFileName) {
-        return function(error) {
-            console.error('Error creating  file ' + newFileName + "\n" + error);
-        }
-    }
-    //#endregion
     //#endregion
 }
 

@@ -34,8 +34,14 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         // app.receivedEvent('deviceready');
-        cacheManager = new CacheManager();
-        Log("WORKS");
+        // cacheManager = new CacheManager();
+        // dateChecker = new DateChecker();
+        // dateChecker.update();
+
+        accountManager = new AccountManager();
+        accountManager.rewriteLoginPassWord("newLogin", "newPassword");
+
+        // Log("WORKS");
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

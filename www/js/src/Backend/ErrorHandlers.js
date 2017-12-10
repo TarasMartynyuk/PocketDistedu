@@ -16,3 +16,16 @@ function onErrorCreateFile(newFileName) {
         console.error('Error creating  file ' + newFileName + "\n" + error);
     }
 }
+
+function onErrorReadFile(filename) {
+    return function(error) {
+        console.error('Error reading  file ' + filename + "\n" + error);
+    }
+}
+
+module.exports.onLocalUrlError = onLocalUrlError;
+module.exports.onErrorGetDir = onErrorGetDir;
+module.exports.onErrorCreateFile = onErrorCreateFile;
+module.exports.onErrorReadFile = onErrorReadFile;
+
+

@@ -1,6 +1,7 @@
 // #region require
 var AccountManager = require('./Backend/AccountManager');
 var CacheManager = require('./Backend/CacheManager');
+var PathLookup = require("./Backend/PathLookup");
 
 // #endregion
 
@@ -15,10 +16,15 @@ var CacheManager = require('./Backend/CacheManager');
     },
 
     onDeviceReady: function() {
-
-        CacheManager.initialize();
+        PathLookup.init();
+        // CacheManager.initialize();
+        // AccountManager.tryGetLogPassFile( function(file){
+        //     console.log("found : " + file);
+        // }, function(error) {
+        //     console.log(error);
+        // });
         // AccountManager.printLP();
-        // accountManager.rewriteLoginPassWord("newLogin", "newPassword");
+        AccountManager.rewriteLoginPassWord("newLogin", "newPassword");
     },
     
 };

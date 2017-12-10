@@ -1,5 +1,5 @@
 
-var  loginPassWordFileName = "loginCredentials.txt",
+var  loginPassWordFileName = "loginCredentials.txt";
 
 function rewriteLoginPassWord(newLogin, newPassword) {
     var logPasName = this.loginPassWordFileName;

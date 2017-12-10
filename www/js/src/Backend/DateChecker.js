@@ -25,3 +25,12 @@ DateChecker.prototype = {
         return parseInt((t2-t1)/(24*3600*1000*7));
     }
 }
+
+
+
+{/* <script type="text/javascript" src="js/Backend/ErrorHandlers.js"></script>    
+    <script type="text/javascript" src="js/Backend/PathLookup.js"></script>
+    <script type="text/javascript" src="js/Backend/AccountManager.js"></script>
+    <script type="text/javascript" src="js/Backend/CacheManager.js"></script>
+    <script type="text/javascript" src="js/Backend/DateChecker.js"></script>
+    <script type="text/javascript" src="js/index.js"></script> */}

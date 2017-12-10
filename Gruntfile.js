@@ -14,13 +14,13 @@ module.exports = function(grunt) {
                 transform:  [ require('brfs') ],
                 browserifyOptions: {
                     //Папка з корнем джерельних кодів javascript
-                    basedir: "www/js/"
+                    basedir: "www/js/src"
                 }
             },
 
             //Збірка з назвою піца
             pocketDistedu: {
-                src:        'www/js/src/main.js',
+                src:        'www/js/src/index.js',
                 dest:       'www/js/main.js'
             }
         }

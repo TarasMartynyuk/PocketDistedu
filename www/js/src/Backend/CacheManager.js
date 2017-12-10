@@ -88,35 +88,6 @@ function initialize() {
     });
 }
 
-    // console.log(fs.root.toInternalURL());
-    
-        // fs.root.getFile("newPersistentFile.txt", { create: true, exclusive: false }, function (fileEntry) {
-            
-        //     console.log("fileEntry is file? " + fileEntry.isFile.toString());
-        //     console.log(fileEntry.name);
-        //     console.log(fileEntry.fullPath);
-            
-        //     // fileEntry.name == 'someFile.txt'
-        //     // fileEntry.fullPath == '/someFile.txt'
-        //     // writeFile(fileEntry, null);
-        // }, onErrorCreateFile("new1.txt"));
-        // fs.root.getFile("newPersistentFile.txt", { create: true, exclusive: false }, function (fileEntry) {
-            
-        //         // console.log("fileEntry is file? " + fileEntry.isFile.toString());
-        //         // console.log(fileEntry.name);
-        //          console.log(fileEntry.toURL() + "FOUND");
-                    
-        //         // fileEntry.name == 'someFile.txt'
-        //         // fileEntry.fullPath == '/someFile.txt'
-        //         // writeFile(fileEntry, null);
-        
-        // }, function(error){
-        //     console.log("NOT FOUND");
-        // });
-
-
-
-
 //#region helpers
 function createCacheDirs(instance, resourcesDirName, assignmentsDirName) {
     console.log("createCacheDirs\n\n");
@@ -134,7 +105,7 @@ function createCacheDirs(instance, resourcesDirName, assignmentsDirName) {
 // onCreatedCallback recieves created dir as argument
 function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
     onCreatedCallback = onCreatedCallback || function(dirEntry) {
-        console.log('created dir ' + dirEntry.toURL());
+        log('created dir ' + dirEntry.toURL());
     };
     rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, ErrorHandlers.onErrorGetDir(newDirName));
 }

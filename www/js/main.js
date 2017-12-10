@@ -93,7 +93,9 @@ function initialize() {
         window.resolveLocalFileSystemURL(cordova.file.applicationStorageDirectory, function (dir) {
             log("found directory : " + dir.toURL());
 
-            create
+            createDirectory(dir, "NEWDIR", function(dir){
+                log("created dir : " + dir.toURL());
+            })
 
             }, function(error) {
                 log("NOT found directory : " + "applicationStorageDirectory");
@@ -111,6 +113,9 @@ function initialize() {
         
         window.resolveLocalFileSystemURL(cordova.file.externalApplicationStorageDirectory, function (dir) {
             log("found directory : " + dir.toURL());
+            createDirectory(dir, "NEWDIR", function(dir){
+                log("created dir : " + dir.toURL());
+            })
             }, function(error) {
                 log("NOT found directory : " + "externalApplicationStorageDirectory");
                 // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
@@ -127,6 +132,9 @@ function initialize() {
             log('searching for : dataDirectory : ' + cordova.file.dataDirectory);
         window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dir) {
             log("found directory : " + dir.toURL());
+            createDirectory(dir, "NEWDIR", function(dir){
+                log("created dir : " + dir.toURL());
+            })
             
             }, function(error) {
                 log("NOT found directory : " + "dataDirectory");
@@ -137,35 +145,6 @@ function initialize() {
         });
     });
 }
-
-    // console.log(fs.root.toInternalURL());
-    
-        // fs.root.getFile("newPersistentFile.txt", { create: true, exclusive: false }, function (fileEntry) {
-            
-        //     console.log("fileEntry is file? " + fileEntry.isFile.toString());
-        //     console.log(fileEntry.name);
-        //     console.log(fileEntry.fullPath);
-            
-        //     // fileEntry.name == 'someFile.txt'
-        //     // fileEntry.fullPath == '/someFile.txt'
-        //     // writeFile(fileEntry, null);
-        // }, onErrorCreateFile("new1.txt"));
-        // fs.root.getFile("newPersistentFile.txt", { create: true, exclusive: false }, function (fileEntry) {
-            
-        //         // console.log("fileEntry is file? " + fileEntry.isFile.toString());
-        //         // console.log(fileEntry.name);
-        //          console.log(fileEntry.toURL() + "FOUND");
-                    
-        //         // fileEntry.name == 'someFile.txt'
-        //         // fileEntry.fullPath == '/someFile.txt'
-        //         // writeFile(fileEntry, null);
-        
-        // }, function(error){
-        //     console.log("NOT FOUND");
-        // });
-
-
-
 
 //#region helpers
 function createCacheDirs(instance, resourcesDirName, assignmentsDirName) {
@@ -184,7 +163,7 @@ function createCacheDirs(instance, resourcesDirName, assignmentsDirName) {
 // onCreatedCallback recieves created dir as argument
 function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
     onCreatedCallback = onCreatedCallback || function(dirEntry) {
-        console.log('created dir ' + dirEntry.toURL());
+        log('created dir ' + dirEntry.toURL());
     };
     rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, ErrorHandlers.onErrorGetDir(newDirName));
 }

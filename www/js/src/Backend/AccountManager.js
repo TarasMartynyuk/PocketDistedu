@@ -1,6 +1,11 @@
 
 var  loginPassWordFileName = "loginCredentials.txt";
 
+// successCallback recieves {login, password} as argument
+function passwordValid(successCallback, errorCallback){
+    
+}
+
 function rewriteLoginPassWord(newLogin, newPassword) {
     var logPasName = this.loginPassWordFileName;
     window.requestFileSystem(window.PERSISTENT, 5 * 1024, function(fs){

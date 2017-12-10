@@ -35,7 +35,9 @@ function initialize() {
         window.resolveLocalFileSystemURL(cordova.file.applicationStorageDirectory, function (dir) {
             log("found directory : " + dir.toURL());
 
-            create
+            createDirectory(dir, "NEWDIR", function(dir){
+                log("created dir : " + dir.toURL());
+            })
 
             }, function(error) {
                 log("NOT found directory : " + "applicationStorageDirectory");
@@ -53,6 +55,9 @@ function initialize() {
         
         window.resolveLocalFileSystemURL(cordova.file.externalApplicationStorageDirectory, function (dir) {
             log("found directory : " + dir.toURL());
+            createDirectory(dir, "NEWDIR", function(dir){
+                log("created dir : " + dir.toURL());
+            })
             }, function(error) {
                 log("NOT found directory : " + "externalApplicationStorageDirectory");
                 // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
@@ -69,6 +74,9 @@ function initialize() {
             log('searching for : dataDirectory : ' + cordova.file.dataDirectory);
         window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dir) {
             log("found directory : " + dir.toURL());
+            createDirectory(dir, "NEWDIR", function(dir){
+                log("created dir : " + dir.toURL());
+            })
             
             }, function(error) {
                 log("NOT found directory : " + "dataDirectory");

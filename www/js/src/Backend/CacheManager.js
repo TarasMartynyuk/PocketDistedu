@@ -2,26 +2,26 @@
 // and data requests
 
 //#region path vars
-var PathLookup = require('./PathLookup');
+var Debug = require('./Debug');
 var ErrorHandlers = require('./ErrorHandlers');
 
 var resourcesDirName = "Resources/";
 var assignmentsDirName = "Assignments/";
 var weekDirName = "Week/";
 
-var recoursesPath = PathLookup.cacheRootPath + weekDirName + resourcesDirName;
-var assignmentsPath = PathLookup.cacheRootPath + weekDirName + assignmentsDirName;
+var recoursesPath = Debug.cacheRootPath + weekDirName + resourcesDirName;
+var assignmentsPath = Debug.cacheRootPath + weekDirName + assignmentsDirName;
 
 //#endregion
 // var dateChecker = new DateChecker();
 
 
 function initialize() {
-    // var test = PathLookup.cacheRootPath + weekDirName ;
+    // var test = Debug.cacheRootPath + weekDirName ;
     // var test = assignmentsPath ;
-    // PathLookup.lg();
-    // PathLookup.lg(cordova.file.applicationStorageDirectory);
-    // PathLookup.lg(cordova.file);
+    // Debug.lg();
+    // Debug.lg(cordova.file.applicationStorageDirectory);
+    // Debug.lg(cordova.file);
     
     // log("TEST PASSED");
     // log("TEST PASSED");
@@ -31,7 +31,7 @@ function initialize() {
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
         
         // log('searching for : applicationStorageDirectory : ' + cordova.file.applicationStorageDirectory);
-        window.resolveLocalFileSystemURL(PathLookup.cacheRootPath, function (dir) {
+        window.resolveLocalFileSystemURL(Debug.cacheRootPath, function (dir) {
             log("found directory : " + dir.toURL());
 
             create
@@ -41,7 +41,7 @@ function initialize() {
                 // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
             },
         function(error) {
-            PathLookup.lg(error);
+            Debug.lg(error);
         });
     });
 
@@ -50,22 +50,22 @@ function initialize() {
 
 //#region helpers
 function createCacheDirs(instance, resourcesDirName, assignmentsDirName) {
-    PathLookup.lg("createCacheDirs\n\n");
-    // PathLookup.lg(PathLookup.PathLookup.cacheRootPath);
-    window.resolveLocalFileSystemURL(PathLookup.PathLookup.cacheRootPath, function (rootDir) {
-        PathLookup.lg("found directory : " + rootDir.toURL());
+    Debug.lg("createCacheDirs\n\n");
+    // Debug.lg(Debug.Debug.cacheRootPath);
+    window.resolveLocalFileSystemURL(Debug.Debug.cacheRootPath, function (rootDir) {
+        Debug.lg("found directory : " + rootDir.toURL());
         createDirectory(rootDir, weekDirName, function(weekDir){
-            PathLookup.lg(weekDir.toURL());
+            Debug.lg(weekDir.toURL());
             createDirectory(weekDir, resourcesDirName);
             createDirectory(weekDir, assignmentsDirName);
         });
         
-    }, onLocalUrlError(PathLookup.PathLookup.cacheRootPath));
+    }, onLocalUrlError(Debug.Debug.cacheRootPath));
 }
 // onCreatedCallback recieves created dir as argument
 function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
     onCreatedCallback = onCreatedCallback || function(dirEntry) {
-        PathLookup.lg('created dir ' + dirEntry.toURL());
+        Debug.lg('created dir ' + dirEntry.toURL());
     };
     rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, ErrorHandlers.onErrorGetDir(newDirName));
 }

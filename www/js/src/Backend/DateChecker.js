@@ -29,7 +29,7 @@ DateChecker.prototype = {
 
 
 {/* <script type="text/javascript" src="js/Backend/ErrorHandlers.js"></script>    
-    <script type="text/javascript" src="js/Backend/PathLookup.js"></script>
+    <script type="text/javascript" src="js/Backend/Debug.js"></script>
     <script type="text/javascript" src="js/Backend/AccountManager.js"></script>
     <script type="text/javascript" src="js/Backend/CacheManager.js"></script>
     <script type="text/javascript" src="js/Backend/DateChecker.js"></script>

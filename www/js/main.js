@@ -51,8 +51,177 @@ function writeToFile(fileEntry, dataObj) {
 module.exports.rewriteLoginPassWord = rewriteLoginPassWord;
 module.exports.printLP = printLP;
 },{}],2:[function(require,module,exports){
+// handles distedu data storage, removal
+// and data requests
+
+//#region path vars
+var PathLookup = require('./PathLookup');
+var ErrorHandlers = require('./ErrorHandlers');
+
+var resourcesDirName = "Resources/";
+var assignmentsDirName = "Assignments/";
+var weekDirName = "Week/";
+
+var recoursesPath = PathLookup.cacheRootPath + weekDirName + resourcesDirName;
+var assignmentsPath = PathLookup.cacheRootPath + weekDirName + assignmentsDirName;
+
+//#endregion
+// var dateChecker = new DateChecker();
+
+
+function initialize() {
+    // var test = PathLookup.cacheRootPath + weekDirName ;
+    // var test = assignmentsPath ;
+    // console.log();
+    // console.log(cordova.file.applicationStorageDirectory);
+    // console.log(cordova.file);
+    
+    var test = cordova.file.applicationStorageDirectory;
+    // log("TEST PASSED");
+    // log("TEST PASSED");
+    // log("TEST PASSED");
+    
+
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
+        
+        window.resolveLocalFileSystemURL(test, function (dir) {
+            log("found directory : " + dir.toURL());
+            }, function(error) {
+                log("NOT found directory : " + "applicationStorageDirectory");
+                // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
+            },
+        function(error) {
+            console.log(error);
+        });
+    });
+
+    test = cordova.file.externalApplicationStorageDirectory;
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
+        
+        window.resolveLocalFileSystemURL(test, function (dir) {
+            log("found directory : " + dir.toURL());
+            }, function(error) {
+                log("NOT found directory : " + "externalApplicationStorageDirectory");
+                // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
+            },
+        function(error) {
+            console.log(error);
+        });
+    });
+
+    
+    test = cordova.file.dataDirectory;
+    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
+        
+        window.resolveLocalFileSystemURL(test, function (dir) {
+            log("found directory : " + dir.toURL());
+            }, function(error) {
+                log("NOT found directory : " + "dataDirectory");
+                // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
+            },
+        function(error) {
+            console.log(error);
+        });
+    });
+}
+
+    // console.log(fs.root.toInternalURL());
+    
+        // fs.root.getFile("newPersistentFile.txt", { create: true, exclusive: false }, function (fileEntry) {
+            
+        //     console.log("fileEntry is file? " + fileEntry.isFile.toString());
+        //     console.log(fileEntry.name);
+        //     console.log(fileEntry.fullPath);
+            
+        //     // fileEntry.name == 'someFile.txt'
+        //     // fileEntry.fullPath == '/someFile.txt'
+        //     // writeFile(fileEntry, null);
+        // }, onErrorCreateFile("new1.txt"));
+        // fs.root.getFile("newPersistentFile.txt", { create: true, exclusive: false }, function (fileEntry) {
+            
+        //         // console.log("fileEntry is file? " + fileEntry.isFile.toString());
+        //         // console.log(fileEntry.name);
+        //          console.log(fileEntry.toURL() + "FOUND");
+                    
+        //         // fileEntry.name == 'someFile.txt'
+        //         // fileEntry.fullPath == '/someFile.txt'
+        //         // writeFile(fileEntry, null);
+        
+        // }, function(error){
+        //     console.log("NOT FOUND");
+        // });
+
+
+
+
+//#region helpers
+function createCacheDirs(instance, resourcesDirName, assignmentsDirName) {
+    console.log("createCacheDirs\n\n");
+    // console.log(PathLookup.PathLookup.cacheRootPath);
+    window.resolveLocalFileSystemURL(PathLookup.PathLookup.cacheRootPath, function (rootDir) {
+        console.log("found directory : " + rootDir.toURL());
+        createDirectory(rootDir, weekDirName, function(weekDir){
+            console.log(weekDir.toURL());
+            createDirectory(weekDir, resourcesDirName);
+            createDirectory(weekDir, assignmentsDirName);
+        });
+        
+    }, onLocalUrlError(PathLookup.PathLookup.cacheRootPath));
+}
+// onCreatedCallback recieves created dir as argument
+function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
+    onCreatedCallback = onCreatedCallback || function(dirEntry) {
+        console.log('created dir ' + dirEntry.toURL());
+    };
+    rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, ErrorHandlers.onErrorGetDir(newDirName));
+}
+//#endregion
+
+function log(message) {
+
+    logP = document.createElement("p");
+    $(logP).text(message);
+    $('#console').append(logP);
+}
+
+module.exports.initialize = initialize;
+
+
+
+
+
+
+
+
+
+},{"./ErrorHandlers":3,"./PathLookup":4}],3:[function(require,module,exports){
+function onLocalUrlError(URL) {
+    return function(error) {
+        console.error(" error resolving URL: " + URL);
+        console.error("returned such error: " + error);
+    }
+}
+
+function onErrorGetDir(newDirName) {
+    return function(error) {
+        console.error('Error getting dir ' + newDirName + "\n" + error);
+    }
+}
+
+function onErrorCreateFile(newFileName) {
+    return function(error) {
+        console.error('Error creating  file ' + newFileName + "\n" + error);
+    }
+}
+},{}],4:[function(require,module,exports){
+// for testing, place them in root;
+var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
+
+module.exports.cacheRootPath = cacheRootPath;
+},{}],5:[function(require,module,exports){
 // #region require
-AccountManager = require('./Backend/AccountManager');
+var AccountManager = require('./Backend/AccountManager');
+var CacheManager = require('./Backend/CacheManager');
 
 // #endregion
 
@@ -67,23 +236,12 @@ AccountManager = require('./Backend/AccountManager');
     },
 
     onDeviceReady: function() {
-        // cacheManager = new CacheManager();
-        // dateChecker = new DateChecker();
-        // dateChecker.update();
-        AccountManager.printLP();
+
+        CacheManager.initialize();
+        // AccountManager.printLP();
         // accountManager.rewriteLoginPassWord("newLogin", "newPassword");
     },
-
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
-    }
+    
 };
 
 $(function(){
@@ -94,4 +252,4 @@ $(function(){
 
 // module.exports.App = app;
 
-},{"./Backend/AccountManager":1}]},{},[2]);
+},{"./Backend/AccountManager":1,"./Backend/CacheManager":2}]},{},[5]);

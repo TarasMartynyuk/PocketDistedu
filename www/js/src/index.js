@@ -1,5 +1,6 @@
 // #region require
-AccountManager = require('./Backend/AccountManager');
+var AccountManager = require('./Backend/AccountManager');
+var CacheManager = require('./Backend/CacheManager');
 
 // #endregion
 
@@ -14,23 +15,12 @@ AccountManager = require('./Backend/AccountManager');
     },
 
     onDeviceReady: function() {
-        // cacheManager = new CacheManager();
-        // dateChecker = new DateChecker();
-        // dateChecker.update();
-        AccountManager.printLP();
+
+        CacheManager.initialize();
+        // AccountManager.printLP();
         // accountManager.rewriteLoginPassWord("newLogin", "newPassword");
     },
-
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
-
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);
-    }
+    
 };
 
 $(function(){

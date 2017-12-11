@@ -13,7 +13,7 @@ var savedPassword;
 // errorCallback will recieve a string
 function savedPasswordValid(successCallback, errorCallback) {
     // first check if file exists
-    Debug.lg("SAVED PASSWORD VALID FUNC");
+    // Debug.lg("SAVED PASSWORD VALID FUNC");
     
     getLoginPassword(function(logPas){
         // try to login into distedu
@@ -35,7 +35,6 @@ function savedPasswordValid(successCallback, errorCallback) {
 // failure takes error obj as argument
 function rewriteLoginPassWord(newLogin, newPassword) {
 
-    window.requestFileSystem(window.PERSISTENT, 5 * 1024, function(fs){
         var logPassDirPath = fs.root
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
@@ -49,14 +48,13 @@ function rewriteLoginPassWord(newLogin, newPassword) {
                 
             }, ErrorHandlers.onLocalUrlError(loginPassWordFileName));
         }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
-    }), function(error){
-        // failure(error);
-    }
 }
 
 // success recieves loginned page as argument
 function getAuthPage(success, error) {
-    tryAuthenticate(savedLogin, savedPassword, success, error);
+    tryAuthenticate({ login : savedLogin,
+        password : savedPassword
+    }, success, error);
 }
 
 // successCallback recieves {login, password} as argument
@@ -88,9 +86,6 @@ function getLoginPassword(success, failure) {
 function tryGetLogPassFile(success, failure){
 
     failure = failure || ErrorHandlers.onLocalUrlError(Debug.cacheRootPath + loginPassWordFileName);
-
-    window.requestFileSystem(window.PERSISTENT, 5 * 1024, function(fs){
-        
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             
             cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
@@ -100,22 +95,19 @@ function tryGetLogPassFile(success, failure){
             } );
 
         }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
-    }), function(error){
-        console.error(error);
-    }
 }
 
 // if pass is valid calls success callback with login and password passed as parameters
 // else passes error to errorCallback and calls it
 function passwordValid(logPas, successCallback, errorCallback) {
 
-    Debug.lg("PASSWORD VALID FUNC");
+    // Debug.lg("PASSWORD VALID FUNC");
     Debug.lg(logPas.login);
     Debug.lg(logPas.password);
     
     tryAuthenticate(logPas,  function(postResult) {
         // the server returns login page if the password/name was not valid
-        Debug.lg(" POST RESULT : \n\n\n" );
+        Debug.lg(" POST RESULT : " );
         Debug.lg($(postResult).filter('title').text());
 
         if(postResult.search('id=\"login-index\"') < 0) {
@@ -133,10 +125,9 @@ function passwordValid(logPas, successCallback, errorCallback) {
 
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
-    Debug.lg("AUTH  FUNC");
-    Debug.lg(" AUTH\n" + logPas.login);
-    Debug.lg(" AUTH\n" + logPas.password);
-    
+    // Debug.lg("AUTH  FUNC");
+    // Debug.lg(" AUTH\n" + logPas.login);
+    // Debug.lg(" AUTH\n" + logPas.password);
     $.ajax({
         type : "POST",
         url : loginURL,

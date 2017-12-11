@@ -3,6 +3,7 @@ var AccountManager = require('./Backend/AccountManager');
 var CacheManager = require('./Backend/CacheManager');
 var Debug = require("./Backend/Debug");
 var DisteduDownloader = require("./Backend/DIsteduDownloader");
+var CourseManager = require("./Backend/CourseManager");
 
 // #endregion
  var app = {
@@ -19,9 +20,17 @@ var DisteduDownloader = require("./Backend/DIsteduDownloader");
         Debug.init();
 
         AccountManager.savedPasswordValid(function(logPas) {
-            Debug.lg(logPas.login);
-            Debug.lg(logPas.password);
-            // DisteduDownloader.getAllCoursesList();
+            // Debug.lg(logPas.login);
+            // Debug.lg(logPas.password);
+            CourseManager.coursesSerialized(function () {
+                Debug.lg("COURSES DESERIALIZED");
+            }, function() {
+                Debug.lg("COURSES NOT FOUND");
+                // filter all available user's courses
+                DisteduDownloader.getAllCoursesList(function(allCourses) {
+
+                });
+            });
         }, function(error) {
             Debug.lge(error);
         });

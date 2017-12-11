@@ -27262,7 +27262,7 @@ var savedPassword;
 // errorCallback will recieve a string
 function savedPasswordValid(successCallback, errorCallback) {
     // first check if file exists
-    Debug.lg("SAVED PASSWORD VALID FUNC");
+    // Debug.lg("SAVED PASSWORD VALID FUNC");
     
     getLoginPassword(function(logPas){
         // try to login into distedu
@@ -27284,7 +27284,6 @@ function savedPasswordValid(successCallback, errorCallback) {
 // failure takes error obj as argument
 function rewriteLoginPassWord(newLogin, newPassword) {
 
-    window.requestFileSystem(window.PERSISTENT, 5 * 1024, function(fs){
         var logPassDirPath = fs.root
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
@@ -27298,14 +27297,13 @@ function rewriteLoginPassWord(newLogin, newPassword) {
                 
             }, ErrorHandlers.onLocalUrlError(loginPassWordFileName));
         }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
-    }), function(error){
-        // failure(error);
-    }
 }
 
 // success recieves loginned page as argument
 function getAuthPage(success, error) {
-    tryAuthenticate(savedLogin, savedPassword, success, error);
+    tryAuthenticate({ login : savedLogin,
+        password : savedPassword
+    }, success, error);
 }
 
 // successCallback recieves {login, password} as argument
@@ -27337,9 +27335,6 @@ function getLoginPassword(success, failure) {
 function tryGetLogPassFile(success, failure){
 
     failure = failure || ErrorHandlers.onLocalUrlError(Debug.cacheRootPath + loginPassWordFileName);
-
-    window.requestFileSystem(window.PERSISTENT, 5 * 1024, function(fs){
-        
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             
             cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
@@ -27349,22 +27344,19 @@ function tryGetLogPassFile(success, failure){
             } );
 
         }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
-    }), function(error){
-        console.error(error);
-    }
 }
 
 // if pass is valid calls success callback with login and password passed as parameters
 // else passes error to errorCallback and calls it
 function passwordValid(logPas, successCallback, errorCallback) {
 
-    Debug.lg("PASSWORD VALID FUNC");
+    // Debug.lg("PASSWORD VALID FUNC");
     Debug.lg(logPas.login);
     Debug.lg(logPas.password);
     
     tryAuthenticate(logPas,  function(postResult) {
         // the server returns login page if the password/name was not valid
-        Debug.lg(" POST RESULT : \n\n\n" );
+        Debug.lg(" POST RESULT : " );
         Debug.lg($(postResult).filter('title').text());
 
         if(postResult.search('id=\"login-index\"') < 0) {
@@ -27382,10 +27374,9 @@ function passwordValid(logPas, successCallback, errorCallback) {
 
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
-    Debug.lg("AUTH  FUNC");
-    Debug.lg(" AUTH\n" + logPas.login);
-    Debug.lg(" AUTH\n" + logPas.password);
-    
+    // Debug.lg("AUTH  FUNC");
+    // Debug.lg(" AUTH\n" + logPas.login);
+    // Debug.lg(" AUTH\n" + logPas.password);
     $.ajax({
         type : "POST",
         url : loginURL,
@@ -27428,56 +27419,29 @@ module.exports.rewriteLoginPassWord = rewriteLoginPassWord;
 module.exports.savedPasswordValid = savedPasswordValid;
 module.exports.getLoginPassword = getLoginPassword;
 module.exports.getAuthPage = getAuthPage;
-},{"./Debug":330,"./ErrorHandlers":332}],328:[function(require,module,exports){
-// handles distedu data storage, removal
+},{"./Debug":331,"./ErrorHandlers":332}],328:[function(require,module,exports){
+// handles assignments storage, removal
 // and data requests
 
 //#region path vars
 var Debug = require('./Debug');
 var ErrorHandlers = require('./ErrorHandlers');
-var DisteduDownloader = require('./DisteduDownloader');
 
-var resourcesDirName = "Resources";
-var assignmentsDirName = "Assignments";
 // root for all asignments directories - emplty when week is not cached
 var weekDirName = "Week";
-
-
+var resourcesDirName = "Resources";
+var assignmentDescrFilename = "description.txt";
 //#endregion
 
+// creates a folder for assignment with all needed data cached there
+function cacheAssignmentData(assignment) {
+    
+}
 
-function initialize(alreadyCachedCallback, cacheMissingCallback) {
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
-        
-        // check if we have cached files already - wether weekDir exists
-        window.resolveLocalFileSystemURL(Debug.cacheRootPath, function (dir) {
-            log("found directory : " + dir.toURL());
-
-           
-
-            
-        }, function(error) {
-            Debug.lg(error);
-        });
-    });
+function deleteAssignmentData(assignment) {
 
 }
 
-
-//#region helpers
-function createCacheDirs(instance, resourcesDirName, assignmentsDirName) {
-    Debug.lg("createCacheDirs\n\n");
-    // Debug.lg(Debug.Debug.cacheRootPath);
-    window.resolveLocalFileSystemURL(Debug.Debug.cacheRootPath, function (rootDir) {
-        Debug.lg("found directory : " + rootDir.toURL());
-        createDirectory(rootDir, weekDirName, function(weekDir){
-            Debug.lg(weekDir.toURL());
-            createDirectory(weekDir, resourcesDirName);
-            createDirectory(weekDir, assignmentsDirName);
-        });
-        
-    }, onLocalUrlError(Debug.Debug.cacheRootPath));
-}
 // onCreatedCallback recieves created dir as argument
 function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
     onCreatedCallback = onCreatedCallback || function(dirEntry) {
@@ -27487,38 +27451,127 @@ function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
 }
 //#endregion
 
-
-
-module.exports.initialize = initialize;
-
-
-
+module.exports.cacheAssignmentData = cacheAssignmentData;
+module.exports.assignmentDescrFilename = assignmentDescrFilename;
+module.exports.resourcesDirName = resourcesDirName;
 
 
 
 
 
 
-},{"./Debug":330,"./DisteduDownloader":331,"./ErrorHandlers":332}],329:[function(require,module,exports){
+
+
+
+
+
+
+
+
+},{"./Debug":331,"./ErrorHandlers":332}],329:[function(require,module,exports){
+var Debug = require("./Debug");
+var ErrorHandlers = require("./ErrorHandlers");
+var userCourses = [];
+var coursesJsonName = "userCourses.json";
+
+
+// success takes 0 args, 
+// is run when userCourses where successfully retrieved from disk
+// failure takes string representing error
+function coursesSerialized(success, failure) {
+
+    window.resolveLocalFileSystemURL(Debug.cacheRootPath + coursesJsonName, function(fileEntry){
+
+        fileEntry.file(function (file) {
+            var reader = new FileReader();
+
+            reader.onloadend = function (e) {
+                try {
+                    userCourses = JSON.parse(this.result);
+                } catch(e) {
+                    failure(e);
+                }
+            };
+
+            reader.readAsText(file);
+
+        }, failure( "cannot read file : "+ Debug.cacheRootPath + coursesJsonName));
+
+    }, failure( "cannot find URL : " + Debug.cacheRootPath + coursesJsonName));
+
+}
+
+// delete courses that are marked as done from disk(if deadline has passed), 
+// cache those that are not longer than week from now
+function update() {
+
+}
+
+// pass user - filtered array of courses as arg,
+// serializes it to be able to use in next sessions
+function saveUserCourses(filteredCourses) {
+    // window.PERSISTENT, 5 * 1024, function(fs) {
+    //     fs.readFile(coursesJsonName, function (error, data){
+    //         if(!error) {
+    //             success();
+    //         } else {
+    //             Debug.lg("did not found courses JSON");
+    //             failure();
+    //         }
+    //     });
+
+    // }, function(error){
+    //     Debug.lge(error);
+    // }
+}
+
+//#region 
+
+
+//#endregion
+
+module.exports.coursesSerialized = coursesSerialized;
+},{"./Debug":331,"./ErrorHandlers":332}],330:[function(require,module,exports){
 var AccountManager = require('./AccountManager');
+var Debug = require('./Debug');
 var cheerio = require('cheerio');
 
-// returns list of all courses of user (using his data from AccountManager), 
+// success takes list of all courses of user (using his data from AccountManager) as argument, 
 // in format [{ string_name : int_id, otherEntry, ...}]
-function getAllCoursesList() {
+function getAllCoursesList(success) {
     // first, get the after-login page
-    AccountManager.tryAuthenticate(function(afterLoginPage){
-    
-        Debug.lg(cheerio);
+    AccountManager.getAuthPage( function(afterLoginPage){
+        var cher = cheerio.load(afterLoginPage);
+        var div = cher(".logininfo").first();
+        var a = cher(div).find('a').first();
+        Debug.lg(a.attr('href'));
+
+        // Debug.lg(cher(div).children);
         
+        // .children('a')
         
     }, function(error){
         Debug.lge(error);
     });
 }
 
+// success takes HTML string with all courses assignments as arg
+function getCourseAssignmentsPage(course, success) {
+    
+}
+
+// success takes HTML string with all courses resources as arg
+function getCourseResourcesPage(course, success) {
+
+}
+
 module.exports.getAllCoursesList = getAllCoursesList;
-},{"./AccountManager":327,"cheerio":5}],330:[function(require,module,exports){
+module.exports.getCourseAssignmentsPage = getCourseAssignmentsPage;
+module.exports.getCourseResourcesPage = getCourseResourcesPage;
+
+
+
+},{"./AccountManager":327,"./Debug":331,"cheerio":5}],331:[function(require,module,exports){
 // for testing, place them in root;
 function init() {
     var debug = true; // when in browser, that is
@@ -27549,9 +27602,7 @@ function init() {
 module.exports.init = init;
 
 
-},{}],331:[function(require,module,exports){
-arguments[4][329][0].apply(exports,arguments)
-},{"./AccountManager":327,"cheerio":5,"dup":329}],332:[function(require,module,exports){
+},{}],332:[function(require,module,exports){
 function onLocalUrlError(URL) {
     return function(error) {
         PathLookup.lge(" error resolving URL: " + URL);
@@ -27590,6 +27641,7 @@ var AccountManager = require('./Backend/AccountManager');
 var CacheManager = require('./Backend/CacheManager');
 var Debug = require("./Backend/Debug");
 var DisteduDownloader = require("./Backend/DIsteduDownloader");
+var CourseManager = require("./Backend/CourseManager");
 
 // #endregion
  var app = {
@@ -27606,9 +27658,17 @@ var DisteduDownloader = require("./Backend/DIsteduDownloader");
         Debug.init();
 
         AccountManager.savedPasswordValid(function(logPas) {
-            Debug.lg(logPas.login);
-            Debug.lg(logPas.password);
-            // DisteduDownloader.getAllCoursesList();
+            // Debug.lg(logPas.login);
+            // Debug.lg(logPas.password);
+            CourseManager.coursesSerialized(function () {
+                Debug.lg("COURSES DESERIALIZED");
+            }, function() {
+                Debug.lg("COURSES NOT FOUND");
+                // filter all available user's courses
+                DisteduDownloader.getAllCoursesList(function(allCourses) {
+
+                });
+            });
         }, function(error) {
             Debug.lge(error);
         });
@@ -27620,4 +27680,4 @@ $(function(){
 });
 // module.exports.App = app;
 
-},{"./Backend/AccountManager":327,"./Backend/CacheManager":328,"./Backend/DIsteduDownloader":329,"./Backend/Debug":330}]},{},[333]);
+},{"./Backend/AccountManager":327,"./Backend/CacheManager":328,"./Backend/CourseManager":329,"./Backend/DIsteduDownloader":330,"./Backend/Debug":331}]},{},[333]);

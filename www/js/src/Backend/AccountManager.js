@@ -1,108 +1,62 @@
 //#region defs
 var Debug = require('./Debug');
-var JSSoup = require('jssoup').default;
 var ErrorHandlers = require('./ErrorHandlers');
+
 var loginPassWordFileName = "loginCredentials.txt";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
 var loginURL = "http://distedu.ukma.edu.ua/login/index.php";
-// var secureURLTest = "http://distedu.ukma.edu.ua/mod/resource/index.php?id=131";
 var savedLogin;
 var savedPassword;
 //#endregion
 
 // successCallback recieves {login, password} as argument
 // errorCallback will recieve a string
-function passwordValid(successCallback, errorCallback) {
+function savedPasswordValid(successCallback, errorCallback) {
     // first check if file exists
+    Debug.lg("SAVED PASSWORD VALID FUNC");
+    
     getLoginPassword(function(logPas){
         // try to login into distedu
         savedLogin = logPas.login;
         savedPassword = logPas.password;
-        Debug.lg(savedLogin);
-        Debug.lg(savedPassword);
-
-        tryAuthenticate( function(postResult) {
-            // the server returns login page if the password/name was not valid
-            Debug.lg(" POST RESULT : \n\n\n" );
-            // Debug.lg($(postResult).filter('title').html());
-            // $('#parser').text("test");
-            // $('#parser').html(postResult);            
-
-            Debug.lg(postResult.search('id=\"login-index\"'));
-            // $('#parser').load($(""postResult""));
-            
-
-            // Debug.lg($('#parser'));
-
-            // var soup = new JSSoup(postResult);
-            // Debug.lg(soup.find('.login'));
-            
-            // loginSelector = $(postResult).filter('text');
-            // Debug.lg("login selector : \n\n");
-            // Debug.lg(loginSelector);
-            // Debug.lg("Selector lenth " + loginSelector.length);
-            // Debug.lg(loginSelector.html());
-            // Debug.lg("posted");
-        }, function (error) {
-            Debug.lge(error);
-        });
+        // Debug.lg(savedLogin);
+        // Debug.lg(savedPassword);
+        passwordValid({
+            login : savedLogin,
+            password : savedPassword
+        }, successCallback, errorCallback);
 
     }, function(error) {
       errorCallback(error);
     });
-
-    // $.ajax({
-        //     type : "GET",
-        //     url : loginURL,
-        //     success : function(data) {
-        //         Debug.lg('success with GET\n\n\n');
-        //         Debug.lg($(data).filter('title').html());
-        //         // Debug.lg(data);
-        //     },
-        //     error : function(err) {
-        //         Debug.lge(err);
-        //     }
-        //     });
 }
 
 // success takes 0 arguments
 // failure takes error obj as argument
-function rewriteLoginPassWord(newLogin, newPassword, success, failure) {
+function rewriteLoginPassWord(newLogin, newPassword) {
 
     window.requestFileSystem(window.PERSISTENT, 5 * 1024, function(fs){
         var logPassDirPath = fs.root
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
-                Debug.lg("created : " + file);
-                Debug.lg("toURL() : " + file.toURL());
-                Debug.lg("fullpath : " + file.fullPath);
-                writeToFile(file, new Blob([newLogin + "\n" + newPassword]), success);
+                Debug.lg("created : " + file.toURL());
+                // Debug.lg("toURL() : " + );
+                // Debug.lg("fullpath : " + file.fullPath);
+                Debug.lg(newLogin);
+                Debug.lg(newPassword);
+                
+                writeToFile(file, new Blob([newLogin + "\n" + newPassword]));
                 
             }, ErrorHandlers.onLocalUrlError(loginPassWordFileName));
         }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
     }), function(error){
-        failure(error);
+        // failure(error);
     }
 }
 
-function tryAuthenticate(success, error) {
-    $.ajax({
-        type : "POST",
-        url : loginURL,
-        data : {
-            username : savedLogin,
-            password : savedPassword,
-            testcookies : 1
-        },
-        success : function(data) {
-            success(data);
-        },
-        error : function(err) {
-            error("post to login page failed : \n");
-            Debug.lge(err);
-        }
-    });
-
+// success recieves loginned page as argument
+function getAuthPage(success, error) {
+    tryAuthenticate(savedLogin, savedPassword, success, error);
 }
 
 // successCallback recieves {login, password} as argument
@@ -151,15 +105,65 @@ function tryGetLogPassFile(success, failure){
     }
 }
 
+// if pass is valid calls success callback with login and password passed as parameters
+// else passes error to errorCallback and calls it
+function passwordValid(logPas, successCallback, errorCallback) {
+
+    Debug.lg("PASSWORD VALID FUNC");
+    Debug.lg(logPas.login);
+    Debug.lg(logPas.password);
+    
+    tryAuthenticate(logPas,  function(postResult) {
+        // the server returns login page if the password/name was not valid
+        Debug.lg(" POST RESULT : \n\n\n" );
+        Debug.lg($(postResult).filter('title').text());
+
+        if(postResult.search('id=\"login-index\"') < 0) {
+            Debug.lg("PASS VALID");
+            successCallback(logPas);
+
+        } else {
+            errorCallback("the saved login and password did not pass the authentication");
+        }
+
+    }, function (error) {
+        Debug.lge(error);
+    });
+}
+
+// success takes authPage and logPas as arguments 
+function tryAuthenticate(logPas, success, error) {
+    Debug.lg("AUTH  FUNC");
+    Debug.lg(" AUTH\n" + logPas.login);
+    Debug.lg(" AUTH\n" + logPas.password);
+    
+    $.ajax({
+        type : "POST",
+        url : loginURL,
+        data : {
+            username : logPas.login,
+            password : logPas.password,
+            testcookies : 1
+        },
+        success : function(data) {
+            success(data);
+        },
+        error : function(err) {
+            error("post to login page failed : \n");
+            Debug.lge(err);
+        }
+    });
+}
 // success takes 0 arguments
-function writeToFile(fileEntry, dataObj, success) {
+function writeToFile(fileEntry, dataObj) {
     // Create a FileWriter object for our FileEntry (log.txt).
+
+    Debug.lg("dataobj " + dataObj);
     fileEntry.createWriter(function (fileWriter) {
 
         fileWriter.onwriteend = function() {
-            Debug.lg("Successful file write : " + fileEntry);
-            Debug.lg(dataObj);
-            success();
+            // Debug.lg("Successful file write : " + fileEntry);
+            // Debug.lg(dataObj);
         };
 
         fileWriter.onerror = function (e) {
@@ -172,6 +176,6 @@ function writeToFile(fileEntry, dataObj, success) {
 //#endregion
 
 module.exports.rewriteLoginPassWord = rewriteLoginPassWord;
-module.exports.tryGetLogPassFile = tryGetLogPassFile;
-module.exports.passwordValid = passwordValid;
-module.exports.tryAuthenticate = tryAuthenticate;
+module.exports.savedPasswordValid = savedPasswordValid;
+module.exports.getLoginPassword = getLoginPassword;
+module.exports.getAuthPage = getAuthPage;

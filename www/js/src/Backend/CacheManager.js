@@ -4,43 +4,28 @@
 //#region path vars
 var Debug = require('./Debug');
 var ErrorHandlers = require('./ErrorHandlers');
+var DisteduDownloader = require('./DisteduDownloader');
 
-var resourcesDirName = "Resources/";
-var assignmentsDirName = "Assignments/";
-var weekDirName = "Week/";
+var resourcesDirName = "Resources";
+var assignmentsDirName = "Assignments";
+// root for all asignments directories - emplty when week is not cached
+var weekDirName = "Week";
 
-var recoursesPath = Debug.cacheRootPath + weekDirName + resourcesDirName;
-var assignmentsPath = Debug.cacheRootPath + weekDirName + assignmentsDirName;
 
 //#endregion
-// var dateChecker = new DateChecker();
 
 
-function initialize() {
-    // var test = Debug.cacheRootPath + weekDirName ;
-    // var test = assignmentsPath ;
-    // Debug.lg();
-    // Debug.lg(cordova.file.applicationStorageDirectory);
-    // Debug.lg(cordova.file);
-    
-    // log("TEST PASSED");
-    // log("TEST PASSED");
-    // log("TEST PASSED");
-    
-
+function initialize(alreadyCachedCallback, cacheMissingCallback) {
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
         
-        // log('searching for : applicationStorageDirectory : ' + cordova.file.applicationStorageDirectory);
+        // check if we have cached files already - wether weekDir exists
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function (dir) {
             log("found directory : " + dir.toURL());
 
-            create
+           
 
-            }, function(error) {
-                log("NOT found directory : " + "applicationStorageDirectory");
-                // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
-            },
-        function(error) {
+            
+        }, function(error) {
             Debug.lg(error);
         });
     });

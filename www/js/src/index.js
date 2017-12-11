@@ -18,22 +18,17 @@ var DisteduDownloader = require("./Backend/DIsteduDownloader");
     onDeviceReady: function() {
         Debug.init();
 
-        AccountManager.passwordValid(function(s) {
-
-        //     // DisteduDownloader.getAllCoursesList();
+        AccountManager.savedPasswordValid(function(logPas) {
+            Debug.lg(logPas.login);
+            Debug.lg(logPas.password);
+            // DisteduDownloader.getAllCoursesList();
         }, function(error) {
             Debug.lge(error);
         });
-
-        // AccountManager.rewriteLoginPassWord("taras22", "eduKMA22@");
     }
-    
 };
 
 $(function(){
     app.initialize();
-    
 });
-
-
 // module.exports.App = app;

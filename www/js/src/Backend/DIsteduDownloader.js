@@ -4,4 +4,13 @@ var AccountManager = require('./AccountManager');
 // in format [{ string_name : int_id, otherEntry, ...}]
 function getAllCoursesList() {
     // first, get the after-login page
+    AccountManager.tryAuthenticate(function(afterLoginPage){
+        
+
+        
+    }, function(error){
+
+    });
 }
+
+module.exports.getAllCoursesList = getAllCoursesList;

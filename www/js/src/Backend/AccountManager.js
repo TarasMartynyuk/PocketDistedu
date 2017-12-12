@@ -39,8 +39,6 @@ function rewriteLoginPassWord(newLogin, newPassword) {
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
                 Debug.lg("created : " + file.toURL());
-                // Debug.lg("toURL() : " + );
-                // Debug.lg("fullpath : " + file.fullPath);
                 Debug.lg(newLogin);
                 Debug.lg(newPassword);
                 
@@ -139,6 +137,9 @@ function writeToFile(fileEntry, dataObj) {
         };
 
         fileWriter.write(dataObj);
+    }, function(error) {
+        Debug.lge('could not create writer for file: ' + fileEntry);
+        Debug.lge('returned such error : ' + error);
     });
 }
 

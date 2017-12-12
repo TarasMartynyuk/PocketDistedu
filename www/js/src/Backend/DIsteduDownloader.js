@@ -7,16 +7,42 @@ var cheerio = require('cheerio');
 function getAllCoursesList(success) {
     // first, get the after-login page
     AccountManager.getAuthPage( function(afterLoginPage){
+
         var cher = cheerio.load(afterLoginPage);
         var div = cher(".logininfo").first();
         var a = cher(div).find('a').first();
-        Debug.lg(a.attr('href'));
+        var userPageURL = a.attr('href') + "2193892183";
+        userPageURL = userPageURL.replace(/[0-9]+$/i, "1");
+        Debug.lg(userPageURL);
+
+        $.ajax({
+            type : "GET",
+            url : userPageURL,
+            success : function(data) {
+                // success(data);
+                cher = cheerio.load(data);
+                Debug.lg(cher('title').text());
+                
+                var allCourses = [];
+                var courseContainer = cher('.info.c1');
+                Debug.lg(courseContainer.children());
+                // Debug.lg(courseContainer.find(':nth-child(2)'));
+                // courseContainer.children().each(function(index, element){
+                //     allCourses.push(element.attr('href'))
+                // });
+            },
+            error : function(err) {
+                Debug.lge("GET  : \n");
+                Debug.lge(err);
+            }
+        });
 
         // Debug.lg(cher(div).children);
         
         // .children('a')
         
     }, function(error){
+        Debug.lge("error AUTH");
         Debug.lge(error);
     });
 }

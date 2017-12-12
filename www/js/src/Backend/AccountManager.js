@@ -9,6 +9,7 @@ var savedLogin;
 var savedPassword;
 //#endregion
 
+// loads login and password to memory
 // successCallback recieves {login, password} as argument
 // errorCallback will recieve a string
 function savedPasswordValid(successCallback, errorCallback) {
@@ -57,46 +58,6 @@ function getAuthPage(success, error) {
     }, success, error);
 }
 
-// successCallback recieves {login, password} as argument
-function getLoginPassword(success, failure) {
-    
-    tryGetLogPassFile(function(fileEntry){
-        // attempt to read login and password
-        fileEntry.file(function (file) {
-            var reader = new FileReader();
-    
-            reader.onloadend = function() {
-                var contents = this.result.split('\n');
-
-                success({
-                    login : contents[0],
-                    password : contents[1]
-                });
-            };
-            reader.readAsText(file);
-        }, ErrorHandlers.onErrorReadFile);
-
-    }, function(error) {
-        failure("login-password file does not exist yet");
-    });
-}
-
-//#region helpers
-// success recieves file as argument
-function tryGetLogPassFile(success, failure){
-
-    failure = failure || ErrorHandlers.onLocalUrlError(Debug.cacheRootPath + loginPassWordFileName);
-        window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
-            
-            cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
-                success(file)
-            }, function(error) {
-                failure(error)
-            } );
-
-        }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
-}
-
 // if pass is valid calls success callback with login and password passed as parameters
 // else passes error to errorCallback and calls it
 function passwordValid(logPas, successCallback, errorCallback) {
@@ -123,6 +84,9 @@ function passwordValid(logPas, successCallback, errorCallback) {
     });
 }
 
+
+//#region helpers
+
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
     // Debug.lg("AUTH  FUNC");
@@ -145,6 +109,21 @@ function tryAuthenticate(logPas, success, error) {
         }
     });
 }
+
+// success recieves file as argument
+function tryGetLogPassFile(success, failure){
+    
+        failure = failure || ErrorHandlers.onLocalUrlError(Debug.cacheRootPath + loginPassWordFileName);
+            window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
+                
+                cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
+                    success(file)
+                }, function(error) {
+                    failure(error)
+                } );
+    
+            }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
+    }
 // success takes 0 arguments
 function writeToFile(fileEntry, dataObj) {
     // Create a FileWriter object for our FileEntry (log.txt).
@@ -164,9 +143,32 @@ function writeToFile(fileEntry, dataObj) {
         fileWriter.write(dataObj);
     });
 }
+
+// successCallback recieves {login, password} as argument
+function getLoginPassword(success, failure) {
+    
+    tryGetLogPassFile(function(fileEntry){
+        // attempt to read login and password
+        fileEntry.file(function (file) {
+            var reader = new FileReader();
+    
+            reader.onloadend = function() {
+                var contents = this.result.split('\n');
+
+                success({
+                    login : contents[0],
+                    password : contents[1]
+                });
+            };
+            reader.readAsText(file);
+        }, ErrorHandlers.onErrorReadFile);
+
+    }, function(error) {
+        failure("login-password file does not exist yet");
+    });
+}
 //#endregion
 
 module.exports.rewriteLoginPassWord = rewriteLoginPassWord;
 module.exports.savedPasswordValid = savedPasswordValid;
-module.exports.getLoginPassword = getLoginPassword;
 module.exports.getAuthPage = getAuthPage;

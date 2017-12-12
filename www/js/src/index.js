@@ -23,31 +23,37 @@ var CourseManager = require("./Backend/CourseManager");
 
         $('#submit').click(function () {
             var login = $('#login').val();
-            Debug.lg(login);
+            // Debug.lg(login);
 
             var password = $('#password').val();
-            Debug.lg(password);
+            // Debug.lg(password);
 
             AccountManager.rewriteLoginPassWord(login, password);
 
             });
         
         
-        AccountManager.savedPasswordValid(function(logPas) {
-            Debug.lg(logPas.login);
-            Debug.lg(logPas.password);
-        //     CourseManager.coursesSerialized(function () {
-        //         Debug.lg("COURSES DESERIALIZED");
-        //     }, function() {
-        //         Debug.lg("COURSES NOT FOUND");
-        //         // filter all available user's courses
-                DisteduDownloader.getAllCoursesList(function(allCourses) {
+        $('#test-file').click(function () {
 
-                });
-            // });
-        }, function(error) {
-            Debug.lge(error);
+            AccountManager.savedPasswordValid(function(logPas) {
+                Debug.lg(logPas.login);
+                Debug.lg(logPas.password);
+            //     CourseManager.coursesSerialized(function () {
+            //         Debug.lg("COURSES DESERIALIZED");
+            //     }, function() {
+            //         Debug.lg("COURSES NOT FOUND");
+            //         // filter all available user's courses
+                    DisteduDownloader.getAllCoursesList(function(allCourses) {
+    
+                    });
+                // });
+            }, function(error) {
+                Debug.lge(error);
+            });
+
         });
+            
+        
     }
 };
 

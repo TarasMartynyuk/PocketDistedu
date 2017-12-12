@@ -27285,7 +27285,6 @@ function savedPasswordValid(successCallback, errorCallback) {
 // failure takes error obj as argument
 function rewriteLoginPassWord(newLogin, newPassword) {
 
-        var logPassDirPath = fs.root
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
                 Debug.lg("created : " + file.toURL());
@@ -27600,8 +27599,8 @@ module.exports.getCourseResourcesPage = getCourseResourcesPage;
 },{"./AccountManager":327,"./Debug":331,"cheerio":5}],331:[function(require,module,exports){
 // for testing, place them in root;
 function init() {
-    var debug = false; // when in browser, that is
-    var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.dataDirectory;
+    var debug = true; // when in browser, that is
+    var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.externalDataDirectory;
     // var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
     var lg = debug? console.log : log;
     var lge = debug? console.error : logError;
@@ -27690,31 +27689,37 @@ var CourseManager = require("./Backend/CourseManager");
 
         $('#submit').click(function () {
             var login = $('#login').val();
-            Debug.lg(login);
+            // Debug.lg(login);
 
             var password = $('#password').val();
-            Debug.lg(password);
+            // Debug.lg(password);
 
             AccountManager.rewriteLoginPassWord(login, password);
 
             });
         
         
-        AccountManager.savedPasswordValid(function(logPas) {
-            Debug.lg(logPas.login);
-            Debug.lg(logPas.password);
-        //     CourseManager.coursesSerialized(function () {
-        //         Debug.lg("COURSES DESERIALIZED");
-        //     }, function() {
-        //         Debug.lg("COURSES NOT FOUND");
-        //         // filter all available user's courses
-                DisteduDownloader.getAllCoursesList(function(allCourses) {
+        $('#test-file').click(function () {
 
-                });
-            // });
-        }, function(error) {
-            Debug.lge(error);
+            AccountManager.savedPasswordValid(function(logPas) {
+                Debug.lg(logPas.login);
+                Debug.lg(logPas.password);
+            //     CourseManager.coursesSerialized(function () {
+            //         Debug.lg("COURSES DESERIALIZED");
+            //     }, function() {
+            //         Debug.lg("COURSES NOT FOUND");
+            //         // filter all available user's courses
+                    DisteduDownloader.getAllCoursesList(function(allCourses) {
+    
+                    });
+                // });
+            }, function(error) {
+                Debug.lge(error);
+            });
+
         });
+            
+        
     }
 };
 

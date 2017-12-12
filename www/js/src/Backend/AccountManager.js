@@ -20,8 +20,8 @@ function savedPasswordValid(successCallback, errorCallback) {
         // try to login into distedu
         savedLogin = logPas.login;
         savedPassword = logPas.password;
-        // Debug.lg(savedLogin);
-        // Debug.lg(savedPassword);
+        Debug.lg("loaded : " + savedLogin);
+        Debug.lg("loaded : " + savedPassword);
         passwordValid({
             login : savedLogin,
             password : savedPassword
@@ -62,8 +62,8 @@ function getAuthPage(success, error) {
 function passwordValid(logPas, successCallback, errorCallback) {
 
     // Debug.lg("PASSWORD VALID FUNC");
-    Debug.lg(logPas.login);
-    Debug.lg(logPas.password);
+    // Debug.lg(logPas.login);
+    // Debug.lg(logPas.password);
     
     tryAuthenticate(logPas,  function(postResult) {
         // the server returns login page if the password/name was not valid
@@ -91,7 +91,7 @@ function tryAuthenticate(logPas, success, error) {
     // Debug.lg(" AUTH\n" + logPas.password);
     $.ajax({
         type : "POST",
-        url : loginURL,
+        url : loginURL, // + "NOT FVASADJKASDJKLAS",
         data : {
             username : logPas.login,
             password : logPas.password,
@@ -103,6 +103,7 @@ function tryAuthenticate(logPas, success, error) {
         error : function(err) {
             error("post to login page failed : \n");
             Debug.lge(err);
+            Debug.lge(err.responseText);
         }
     });
 }

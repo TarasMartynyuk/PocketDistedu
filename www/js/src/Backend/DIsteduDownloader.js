@@ -31,6 +31,8 @@ function getAllCoursesList(success) {
                     // allCourses.push(element.attr('href'))
                     Debug.lg(index);
                     Debug.lg(element.attribs.href);
+                    Debug.lg(element.firstChild.data);
+                    
                 
                 });
             },

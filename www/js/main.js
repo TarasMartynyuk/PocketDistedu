@@ -27309,8 +27309,6 @@ function getAuthPage(success, error) {
 function passwordValid(logPas, successCallback, errorCallback) {
 
     // Debug.lg("PASSWORD VALID FUNC");
-    // Debug.lg(logPas.login);
-    // Debug.lg(logPas.password);
     
     tryAuthenticate(logPas,  function(postResult) {
         // the server returns login page if the password/name was not valid
@@ -27334,8 +27332,9 @@ function passwordValid(logPas, successCallback, errorCallback) {
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
     // Debug.lg("AUTH  FUNC");
-    // Debug.lg(" AUTH\n" + logPas.login);
-    // Debug.lg(" AUTH\n" + logPas.password);
+    Debug.lg(" AUTH\n" + logPas.login);
+    Debug.lg(" AUTH\n" + logPas.password);
+    Debug.lg("posting to : " + loginURL);
     $.ajax({
         type : "POST",
         url : loginURL, // + "NOT FVASADJKASDJKLAS",
@@ -27349,7 +27348,7 @@ function tryAuthenticate(logPas, success, error) {
         },
         error : function(err) {
             error("post to login page failed : \n");
-            // Debug.lge(err);
+            Debug.lge(err);
             Debug.lge(err.responseText);
         }
     });
@@ -27550,7 +27549,7 @@ function getAllCoursesList(success) {
         var cher = cheerio.load(afterLoginPage);
         var div = cher(".logininfo").first();
         var a = cher(div).find('a').first();
-        var userPageURL = a.attr('href') + "2193892183";
+        var userPageURL = a.attr('href');
         userPageURL = userPageURL.replace(/[0-9]+$/i, "1");
         Debug.lg(userPageURL);
 
@@ -27611,7 +27610,7 @@ module.exports.getCourseResourcesPage = getCourseResourcesPage;
 // for testing, place them in root;
 function init() {
 
-    var debug = true; // when in browser, that is
+    var debug = false; // when in browser, that is
     var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.externalDataDirectory;
 //     var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
     
@@ -27625,7 +27624,7 @@ function init() {
                 //#region logger
                 var logfilePath = // debug? "filesystem:http://192.168.0.103:3000/persistent/" + "PocketDisteduLog.txt": 
                 // cordova.file.externalRootDirectory +
-                 "PocketDisteduLog.txt";
+                cacheRootPath + "PocketDisteduLog.txt";
         
                 // setup a logfile path (required) 
                 // this path is relative to your device sdcard storage directory 

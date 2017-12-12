@@ -60,8 +60,6 @@ function getAuthPage(success, error) {
 function passwordValid(logPas, successCallback, errorCallback) {
 
     // Debug.lg("PASSWORD VALID FUNC");
-    // Debug.lg(logPas.login);
-    // Debug.lg(logPas.password);
     
     tryAuthenticate(logPas,  function(postResult) {
         // the server returns login page if the password/name was not valid
@@ -85,8 +83,9 @@ function passwordValid(logPas, successCallback, errorCallback) {
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
     // Debug.lg("AUTH  FUNC");
-    // Debug.lg(" AUTH\n" + logPas.login);
-    // Debug.lg(" AUTH\n" + logPas.password);
+    Debug.lg(" AUTH\n" + logPas.login);
+    Debug.lg(" AUTH\n" + logPas.password);
+    Debug.lg("posting to : " + loginURL);
     $.ajax({
         type : "POST",
         url : loginURL, // + "NOT FVASADJKASDJKLAS",
@@ -100,7 +99,7 @@ function tryAuthenticate(logPas, success, error) {
         },
         error : function(err) {
             error("post to login page failed : \n");
-            // Debug.lge(err);
+            Debug.lge(err);
             Debug.lge(err.responseText);
         }
     });

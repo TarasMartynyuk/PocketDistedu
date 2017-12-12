@@ -11,7 +11,7 @@ function getAllCoursesList(success) {
         var cher = cheerio.load(afterLoginPage);
         var div = cher(".logininfo").first();
         var a = cher(div).find('a').first();
-        var userPageURL = a.attr('href') + "2193892183";
+        var userPageURL = a.attr('href');
         userPageURL = userPageURL.replace(/[0-9]+$/i, "1");
         Debug.lg(userPageURL);
 

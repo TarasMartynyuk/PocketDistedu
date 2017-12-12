@@ -130,8 +130,8 @@ function writeToFile(fileEntry, dataObj) {
     fileEntry.createWriter(function (fileWriter) {
 
         fileWriter.onwriteend = function() {
-            // Debug.lg("Successful file write : " + fileEntry);
-            // Debug.lg(dataObj);
+            Debug.lg("Successful file write : " + fileEntry);
+            Debug.lg(dataObj);
         };
 
         fileWriter.onerror = function (e) {
@@ -151,6 +151,7 @@ function getLoginPassword(success, failure) {
             var reader = new FileReader();
     
             reader.onloadend = function() {
+                Debug.lg("Success reading file " + file);
                 var contents = this.result.split('\n');
 
                 success({

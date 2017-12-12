@@ -27686,21 +27686,35 @@ var CourseManager = require("./Backend/CourseManager");
     onDeviceReady: function() {
         Debug.init();
         Debug.lg("DEVIEREADY");
-        AccountManager.savedPasswordValid(function(logPas) {
-            Debug.lg(logPas.login);
-            Debug.lg(logPas.password);
+
+
+        $('#submit').click(function () {
+            var login = $('#login').val();
+            Debug.lg(login);
+
+            var password = $('#password').val();
+            Debug.lg(password);
+
+            AccountManager.rewriteLoginPassWord(login, password);
+
+            });
+        
+        
+        // AccountManager.savedPasswordValid(function(logPas) {
+            // Debug.lg(logPas.login);
+            // Debug.lg(logPas.password);
         //     CourseManager.coursesSerialized(function () {
         //         Debug.lg("COURSES DESERIALIZED");
         //     }, function() {
         //         Debug.lg("COURSES NOT FOUND");
         //         // filter all available user's courses
-                DisteduDownloader.getAllCoursesList(function(allCourses) {
+                // DisteduDownloader.getAllCoursesList(function(allCourses) {
 
-                });
+                // });
             // });
-        }, function(error) {
-            Debug.lge(error);
-        });
+        // }, function(error) {
+        //     Debug.lge(error);
+        // });
     }
 };
 

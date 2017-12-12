@@ -27700,21 +27700,21 @@ var CourseManager = require("./Backend/CourseManager");
             });
         
         
-        // AccountManager.savedPasswordValid(function(logPas) {
-            // Debug.lg(logPas.login);
-            // Debug.lg(logPas.password);
+        AccountManager.savedPasswordValid(function(logPas) {
+            Debug.lg(logPas.login);
+            Debug.lg(logPas.password);
         //     CourseManager.coursesSerialized(function () {
         //         Debug.lg("COURSES DESERIALIZED");
         //     }, function() {
         //         Debug.lg("COURSES NOT FOUND");
         //         // filter all available user's courses
-                // DisteduDownloader.getAllCoursesList(function(allCourses) {
+                DisteduDownloader.getAllCoursesList(function(allCourses) {
 
-                // });
+                });
             // });
-        // }, function(error) {
-        //     Debug.lge(error);
-        // });
+        }, function(error) {
+            Debug.lge(error);
+        });
     }
 };
 

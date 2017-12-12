@@ -9,13 +9,6 @@ var savedLogin;
 var savedPassword;
 //#endregion
 
-<<<<<<< HEAD
-// successCallback recieves {login, password} as argument
-function passwordValid(successCallback, errorCallback){
-    
-}
-
-=======
 // loads login and password to memory
 // successCallback recieves {login, password} as argument
 // errorCallback will recieve a string
@@ -41,7 +34,6 @@ function savedPasswordValid(successCallback, errorCallback) {
 
 // success takes 0 arguments
 // failure takes error obj as argument
->>>>>>> TarasMartynyuk
 function rewriteLoginPassWord(newLogin, newPassword) {
 
         var logPassDirPath = fs.root
@@ -92,9 +84,7 @@ function passwordValid(logPas, successCallback, errorCallback) {
     });
 }
 
-
 //#region helpers
-
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
     // Debug.lg("AUTH  FUNC");

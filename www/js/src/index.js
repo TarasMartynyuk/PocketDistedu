@@ -18,10 +18,10 @@ var CourseManager = require("./Backend/CourseManager");
 
     onDeviceReady: function() {
         Debug.init();
-
+        Debug.lg("DEVIEREADY");
         AccountManager.savedPasswordValid(function(logPas) {
-            // Debug.lg(logPas.login);
-            // Debug.lg(logPas.password);
+            Debug.lg(logPas.login);
+            Debug.lg(logPas.password);
         //     CourseManager.coursesSerialized(function () {
         //         Debug.lg("COURSES DESERIALIZED");
         //     }, function() {
@@ -30,9 +30,6 @@ var CourseManager = require("./Backend/CourseManager");
                 DisteduDownloader.getAllCoursesList(function(allCourses) {
 
                 });
-
-
-
             // });
         }, function(error) {
             Debug.lge(error);

@@ -5,13 +5,6 @@ exports.byteLength = byteLength
 exports.toByteArray = toByteArray
 exports.fromByteArray = fromByteArray
 
-<<<<<<< HEAD
-// successCallback recieves {login, password} as argument
-function passwordValid(successCallback, errorCallback){
-    
-}
-
-=======
 var lookup = []
 var revLookup = []
 var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
@@ -27290,7 +27283,6 @@ function savedPasswordValid(successCallback, errorCallback) {
 
 // success takes 0 arguments
 // failure takes error obj as argument
->>>>>>> TarasMartynyuk
 function rewriteLoginPassWord(newLogin, newPassword) {
 
         var logPassDirPath = fs.root
@@ -27341,9 +27333,7 @@ function passwordValid(logPas, successCallback, errorCallback) {
     });
 }
 
-
 //#region helpers
-
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
     // Debug.lg("AUTH  FUNC");
@@ -27466,77 +27456,6 @@ module.exports.assignmentDescrFilename = assignmentDescrFilename;
 module.exports.resourcesDirName = resourcesDirName;
 
 
-<<<<<<< HEAD
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
-        
-        log('searching for : applicationStorageDirectory : ' + cordova.file.applicationStorageDirectory);
-        window.resolveLocalFileSystemURL(cordova.file.applicationStorageDirectory, function (dir) {
-            log("found directory : " + dir.toURL());
-
-            createDirectory(dir, "NEWDIR", function(dir){
-                log("created dir : " + dir.toURL());
-            })
-
-            }, function(error) {
-                log("NOT found directory : " + "applicationStorageDirectory");
-                // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
-            },
-        function(error) {
-            console.log(error);
-        });
-    });
-
-    test = cordova.file.externalApplicationStorageDirectory;
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
-        
-        log('searching for : externalApplicationStorageDirectory : ' + cordova.file.externalApplicationStorageDirectory);
-        
-        window.resolveLocalFileSystemURL(cordova.file.externalApplicationStorageDirectory, function (dir) {
-            log("found directory : " + dir.toURL());
-            createDirectory(dir, "NEWDIR", function(dir){
-                log("created dir : " + dir.toURL());
-            })
-            }, function(error) {
-                log("NOT found directory : " + "externalApplicationStorageDirectory");
-                // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
-            },
-        function(error) {
-            console.log(error);
-        });
-    });
-
-    
-    test = cordova.file.dataDirectory;
-    window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
-
-            log('searching for : dataDirectory : ' + cordova.file.dataDirectory);
-        window.resolveLocalFileSystemURL(cordova.file.dataDirectory, function (dir) {
-            log("found directory : " + dir.toURL());
-            createDirectory(dir, "NEWDIR", function(dir){
-                log("created dir : " + dir.toURL());
-            })
-            
-            }, function(error) {
-                log("NOT found directory : " + "dataDirectory");
-                // createCacheDirs(instance, resourcesDirName, assignmentsDirName);
-            },
-        function(error) {
-            console.log(error);
-        });
-    });
-}
-
-//#region helpers
-function createCacheDirs(instance, resourcesDirName, assignmentsDirName) {
-    console.log("createCacheDirs\n\n");
-    // console.log(PathLookup.PathLookup.cacheRootPath);
-    window.resolveLocalFileSystemURL(PathLookup.PathLookup.cacheRootPath, function (rootDir) {
-        console.log("found directory : " + rootDir.toURL());
-        createDirectory(rootDir, weekDirName, function(weekDir){
-            console.log(weekDir.toURL());
-            createDirectory(weekDir, resourcesDirName);
-            createDirectory(weekDir, assignmentsDirName);
-=======
 
 
 
@@ -27650,7 +27569,6 @@ function getAllCoursesList(success) {
                 Debug.lge("GET  : \n");
                 Debug.lge(err);
             }
->>>>>>> TarasMartynyuk
         });
 
         // Debug.lg(cher(div).children);
@@ -27662,19 +27580,10 @@ function getAllCoursesList(success) {
         Debug.lge(error);
     });
 }
-<<<<<<< HEAD
-// onCreatedCallback recieves created dir as argument
-function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
-    onCreatedCallback = onCreatedCallback || function(dirEntry) {
-        log('created dir ' + dirEntry.toURL());
-    };
-    rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, ErrorHandlers.onErrorGetDir(newDirName));
-=======
 
 // success takes HTML string with all courses assignments as arg
 function getCourseAssignmentsPage(course, success) {
     
->>>>>>> TarasMartynyuk
 }
 
 // success takes HTML string with all courses resources as arg
@@ -27691,8 +27600,9 @@ module.exports.getCourseResourcesPage = getCourseResourcesPage;
 },{"./AccountManager":327,"./Debug":331,"cheerio":5}],331:[function(require,module,exports){
 // for testing, place them in root;
 function init() {
-    var debug = true; // when in browser, that is
-    var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.dataDirectory;
+    var debug = false; // when in browser, that is
+//     var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.dataDirectory;
+    var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
     var lg = debug? console.log : log;
     var lge = debug? console.error : logError;
     
@@ -27720,28 +27630,30 @@ module.exports.init = init;
 
 
 },{}],332:[function(require,module,exports){
+var Debug = require('./Debug');
+
 function onLocalUrlError(URL) {
     return function(error) {
-        PathLookup.lge(" error resolving URL: " + URL);
-        PathLookup.lge("returned such error: " + error);
+        Debug.lge(" error resolving URL: " + URL);
+        Debug.lge("returned such error: " + error);
     }
 }
 
 function onErrorGetDir(newDirName) {
     return function(error) {
-        PathLookup.lge('Error getting dir ' + newDirName + "\n" + error);
+        Debug.lge('Error getting dir ' + newDirName + "\n" + error);
     }
 }
 
 function onErrorCreateFile(newFileName) {
     return function(error) {
-        PathLookup.lge('Error creating  file ' + newFileName + "\n" + error);
+        Debug.lge('Error creating  file ' + newFileName + "\n" + error);
     }
 }
 
 function onErrorReadFile(filename) {
     return function(error) {
-        PathLookup.lge('Error reading  file ' + filename + "\n" + error);
+        Debug.lge('Error reading  file ' + filename + "\n" + error);
     }
 }
 
@@ -27752,7 +27664,7 @@ module.exports.onErrorReadFile = onErrorReadFile;
 
 
 
-},{}],333:[function(require,module,exports){
+},{"./Debug":331}],333:[function(require,module,exports){
 // #region require
 var AccountManager = require('./Backend/AccountManager');
 var CacheManager = require('./Backend/CacheManager');
@@ -27773,10 +27685,10 @@ var CourseManager = require("./Backend/CourseManager");
 
     onDeviceReady: function() {
         Debug.init();
-
+        Debug.lg("DEVIEREADY");
         AccountManager.savedPasswordValid(function(logPas) {
-            // Debug.lg(logPas.login);
-            // Debug.lg(logPas.password);
+            Debug.lg(logPas.login);
+            Debug.lg(logPas.password);
         //     CourseManager.coursesSerialized(function () {
         //         Debug.lg("COURSES DESERIALIZED");
         //     }, function() {
@@ -27785,9 +27697,6 @@ var CourseManager = require("./Backend/CourseManager");
                 DisteduDownloader.getAllCoursesList(function(allCourses) {
 
                 });
-
-
-
             // });
         }, function(error) {
             Debug.lge(error);

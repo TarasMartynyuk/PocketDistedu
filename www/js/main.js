@@ -27269,8 +27269,8 @@ function savedPasswordValid(successCallback, errorCallback) {
         // try to login into distedu
         savedLogin = logPas.login;
         savedPassword = logPas.password;
-        // Debug.lg(savedLogin);
-        // Debug.lg(savedPassword);
+        Debug.lg("loaded : " + savedLogin);
+        Debug.lg("loaded : " + savedPassword);
         passwordValid({
             login : savedLogin,
             password : savedPassword
@@ -27285,12 +27285,9 @@ function savedPasswordValid(successCallback, errorCallback) {
 // failure takes error obj as argument
 function rewriteLoginPassWord(newLogin, newPassword) {
 
-        var logPassDirPath = fs.root
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
                 Debug.lg("created : " + file.toURL());
-                // Debug.lg("toURL() : " + );
-                // Debug.lg("fullpath : " + file.fullPath);
                 Debug.lg(newLogin);
                 Debug.lg(newPassword);
                 
@@ -27312,12 +27309,12 @@ function getAuthPage(success, error) {
 function passwordValid(logPas, successCallback, errorCallback) {
 
     // Debug.lg("PASSWORD VALID FUNC");
-    Debug.lg(logPas.login);
-    Debug.lg(logPas.password);
+    // Debug.lg(logPas.login);
+    // Debug.lg(logPas.password);
     
     tryAuthenticate(logPas,  function(postResult) {
         // the server returns login page if the password/name was not valid
-        Debug.lg(" POST RESULT : " );
+        Debug.lg(" POST RESULT : ");
         Debug.lg($(postResult).filter('title').text());
 
         if(postResult.search('id=\"login-index\"') < 0) {
@@ -27333,9 +27330,7 @@ function passwordValid(logPas, successCallback, errorCallback) {
     });
 }
 
-
 //#region helpers
-
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
     // Debug.lg("AUTH  FUNC");
@@ -27343,7 +27338,7 @@ function tryAuthenticate(logPas, success, error) {
     // Debug.lg(" AUTH\n" + logPas.password);
     $.ajax({
         type : "POST",
-        url : loginURL,
+        url : loginURL, // + "NOT FVASADJKASDJKLAS",
         data : {
             username : logPas.login,
             password : logPas.password,
@@ -27354,7 +27349,8 @@ function tryAuthenticate(logPas, success, error) {
         },
         error : function(err) {
             error("post to login page failed : \n");
-            Debug.lge(err);
+            // Debug.lge(err);
+            Debug.lge(err.responseText);
         }
     });
 }
@@ -27366,9 +27362,9 @@ function tryGetLogPassFile(success, failure){
             window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
                 
                 cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
-                    success(file)
+                    success(file);
                 }, function(error) {
-                    failure(error)
+                    failure(error);
                 } );
     
             }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
@@ -27381,8 +27377,8 @@ function writeToFile(fileEntry, dataObj) {
     fileEntry.createWriter(function (fileWriter) {
 
         fileWriter.onwriteend = function() {
-            // Debug.lg("Successful file write : " + fileEntry);
-            // Debug.lg(dataObj);
+            Debug.lg("Successful file write : " + fileEntry);
+            Debug.lg(dataObj);
         };
 
         fileWriter.onerror = function (e) {
@@ -27390,6 +27386,9 @@ function writeToFile(fileEntry, dataObj) {
         };
 
         fileWriter.write(dataObj);
+    }, function(error) {
+        Debug.lge('could not create writer for file: ' + fileEntry);
+        Debug.lge('returned such error : ' + error);
     });
 }
 
@@ -27402,6 +27401,7 @@ function getLoginPassword(success, failure) {
             var reader = new FileReader();
     
             reader.onloadend = function() {
+                Debug.lg("Success reading file " + file);
                 var contents = this.result.split('\n');
 
                 success({
@@ -27607,25 +27607,67 @@ module.exports.getCourseResourcesPage = getCourseResourcesPage;
 },{"./AccountManager":327,"./Debug":331,"cheerio":5}],331:[function(require,module,exports){
 // for testing, place them in root;
 function init() {
-    var debug = true; // when in browser, that is
-    var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.dataDirectory;
-    var lg = debug? console.log : log;
-    var lge = debug? console.error : logError;
-    
-    function log(message) {
-        
-            logP = document.createElement("p");
-            $(logP).text(message);
-            $('#console').append(logP);
-    }
 
-    function logError(message) {
+    var debug = false; // when in browser, that is
+    var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.externalDataDirectory;
+//     var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
+    
+    
+    var lg;
+    var lge;
+    if (debug) {
+        lg = console.log;
+        lge = console.error;
+
+    } else {
+                //#region logger
+
+                var logfilePath = // debug? "filesystem:http://192.168.0.103:3000/persistent/" + "PocketDisteduLog.txt": 
+                // cordova.file.externalRootDirectory +
+                 "PocketDisteduLog.txt";
         
-            logP = document.createElement("p");
-            $(logP).text(message);
-            $(logP).css('color', 'red');
-            $('#console').append(logP);
+                // setup a logfile path (required) 
+                // this path is relative to your device sdcard storage directory 
+                window.logToFile.setLogfilePath(logfilePath, function () {
+                // logger configured successfully   
+                console.log("LOGFILE CREATED: " + logfilePath);
+                
+                }, function (err) {
+                // logfile could not be written 
+                // handle error 
+                    console.error("LOGGER ERRROR - " + logfilePath + " : ");
+                    console.error(err);
+                });
+        
+                lg = function (message) {
+                    window.logToFile.debug(message);
+                }
+        
+                lge = function(message) {
+                    window.logToFile.error(message);
+                }
+            //#endregion
+        
     }
+    
+
+    // var lg = debug? console.log : log;
+    // var lge = debug? console.error : logError;
+    
+    // function log(message) {
+        
+    //         logP = document.createElement("p");
+    //         $(logP).text(message);
+    //         $('#console').append(logP);
+    // }
+
+    // function logError(message) {
+        
+    //         logP = document.createElement("p");
+    //         $(logP).text(message);
+    //         $(logP).css('color', 'red');
+    //         $('#console').append(logP);
+    // }
 
     module.exports.cacheRootPath = cacheRootPath;
     module.exports.lg = lg;
@@ -27636,28 +27678,30 @@ module.exports.init = init;
 
 
 },{}],332:[function(require,module,exports){
+var Debug = require('./Debug');
+
 function onLocalUrlError(URL) {
     return function(error) {
-        PathLookup.lge(" error resolving URL: " + URL);
-        PathLookup.lge("returned such error: " + error);
+        Debug.lge(" error resolving URL: " + URL);
+        Debug.lge("returned such error: " + error);
     }
 }
 
 function onErrorGetDir(newDirName) {
     return function(error) {
-        PathLookup.lge('Error getting dir ' + newDirName + "\n" + error);
+        Debug.lge('Error getting dir ' + newDirName + "\n" + error);
     }
 }
 
 function onErrorCreateFile(newFileName) {
     return function(error) {
-        PathLookup.lge('Error creating  file ' + newFileName + "\n" + error);
+        Debug.lge('Error creating  file ' + newFileName + "\n" + error);
     }
 }
 
 function onErrorReadFile(filename) {
     return function(error) {
-        PathLookup.lge('Error reading  file ' + filename + "\n" + error);
+        Debug.lge('Error reading  file ' + filename + "\n" + error);
     }
 }
 
@@ -27668,7 +27712,7 @@ module.exports.onErrorReadFile = onErrorReadFile;
 
 
 
-},{}],333:[function(require,module,exports){
+},{"./Debug":331}],333:[function(require,module,exports){
 // #region require
 var AccountManager = require('./Backend/AccountManager');
 var CacheManager = require('./Backend/CacheManager');
@@ -27689,25 +27733,42 @@ var CourseManager = require("./Backend/CourseManager");
 
     onDeviceReady: function() {
         Debug.init();
-
-        AccountManager.savedPasswordValid(function(logPas) {
-            // Debug.lg(logPas.login);
-            // Debug.lg(logPas.password);
-        //     CourseManager.coursesSerialized(function () {
-        //         Debug.lg("COURSES DESERIALIZED");
-        //     }, function() {
-        //         Debug.lg("COURSES NOT FOUND");
-        //         // filter all available user's courses
-                DisteduDownloader.getAllCoursesList(function(allCourses) {
-
-                });
+        Debug.lg("DEVIEREADY");
 
 
+        $('#submit').click(function () {
+            var login = $('#login').val();
+            // Debug.lg(login);
 
-            // });
-        }, function(error) {
-            Debug.lge(error);
+            var password = $('#password').val();
+            // Debug.lg(password);
+
+            AccountManager.rewriteLoginPassWord(login, password);
+
+            });
+        
+        
+        $('#test-file').click(function () {
+
+            AccountManager.savedPasswordValid(function(logPas) {
+                Debug.lg(logPas.login);
+                Debug.lg(logPas.password);
+            //     CourseManager.coursesSerialized(function () {
+            //         Debug.lg("COURSES DESERIALIZED");
+            //     }, function() {
+            //         Debug.lg("COURSES NOT FOUND");
+            //         // filter all available user's courses
+                    DisteduDownloader.getAllCoursesList(function(allCourses) {
+    
+                    });
+                // });
+            }, function(error) {
+                Debug.lge(error);
+            });
+
         });
+            
+        
     }
 };
 

@@ -20,8 +20,8 @@ function savedPasswordValid(successCallback, errorCallback) {
         // try to login into distedu
         savedLogin = logPas.login;
         savedPassword = logPas.password;
-        // Debug.lg(savedLogin);
-        // Debug.lg(savedPassword);
+        Debug.lg("loaded : " + savedLogin);
+        Debug.lg("loaded : " + savedPassword);
         passwordValid({
             login : savedLogin,
             password : savedPassword
@@ -36,12 +36,9 @@ function savedPasswordValid(successCallback, errorCallback) {
 // failure takes error obj as argument
 function rewriteLoginPassWord(newLogin, newPassword) {
 
-        var logPassDirPath = fs.root
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
                 Debug.lg("created : " + file.toURL());
-                // Debug.lg("toURL() : " + );
-                // Debug.lg("fullpath : " + file.fullPath);
                 Debug.lg(newLogin);
                 Debug.lg(newPassword);
                 
@@ -63,12 +60,12 @@ function getAuthPage(success, error) {
 function passwordValid(logPas, successCallback, errorCallback) {
 
     // Debug.lg("PASSWORD VALID FUNC");
-    Debug.lg(logPas.login);
-    Debug.lg(logPas.password);
+    // Debug.lg(logPas.login);
+    // Debug.lg(logPas.password);
     
     tryAuthenticate(logPas,  function(postResult) {
         // the server returns login page if the password/name was not valid
-        Debug.lg(" POST RESULT : " );
+        Debug.lg(" POST RESULT : ");
         Debug.lg($(postResult).filter('title').text());
 
         if(postResult.search('id=\"login-index\"') < 0) {
@@ -84,9 +81,7 @@ function passwordValid(logPas, successCallback, errorCallback) {
     });
 }
 
-
 //#region helpers
-
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
     // Debug.lg("AUTH  FUNC");
@@ -94,7 +89,7 @@ function tryAuthenticate(logPas, success, error) {
     // Debug.lg(" AUTH\n" + logPas.password);
     $.ajax({
         type : "POST",
-        url : loginURL,
+        url : loginURL, // + "NOT FVASADJKASDJKLAS",
         data : {
             username : logPas.login,
             password : logPas.password,
@@ -105,7 +100,8 @@ function tryAuthenticate(logPas, success, error) {
         },
         error : function(err) {
             error("post to login page failed : \n");
-            Debug.lge(err);
+            // Debug.lge(err);
+            Debug.lge(err.responseText);
         }
     });
 }
@@ -117,9 +113,9 @@ function tryGetLogPassFile(success, failure){
             window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
                 
                 cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
-                    success(file)
+                    success(file);
                 }, function(error) {
-                    failure(error)
+                    failure(error);
                 } );
     
             }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
@@ -132,8 +128,8 @@ function writeToFile(fileEntry, dataObj) {
     fileEntry.createWriter(function (fileWriter) {
 
         fileWriter.onwriteend = function() {
-            // Debug.lg("Successful file write : " + fileEntry);
-            // Debug.lg(dataObj);
+            Debug.lg("Successful file write : " + fileEntry);
+            Debug.lg(dataObj);
         };
 
         fileWriter.onerror = function (e) {
@@ -141,6 +137,9 @@ function writeToFile(fileEntry, dataObj) {
         };
 
         fileWriter.write(dataObj);
+    }, function(error) {
+        Debug.lge('could not create writer for file: ' + fileEntry);
+        Debug.lge('returned such error : ' + error);
     });
 }
 
@@ -153,6 +152,7 @@ function getLoginPassword(success, failure) {
             var reader = new FileReader();
     
             reader.onloadend = function() {
+                Debug.lg("Success reading file " + file);
                 var contents = this.result.split('\n');
 
                 success({

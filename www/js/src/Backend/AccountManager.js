@@ -125,6 +125,9 @@ function writeToFile(fileEntry, dataObj) {
     // Create a FileWriter object for our FileEntry (log.txt).
 
     Debug.lg("dataobj " + dataObj);
+    // delete prev contents
+    fileEntry.createWriter((fileWriter)=>fileWriter.truncate(0));
+
     fileEntry.createWriter(function (fileWriter) {
 
         fileWriter.onwriteend = function() {

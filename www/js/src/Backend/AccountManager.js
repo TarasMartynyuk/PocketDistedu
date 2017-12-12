@@ -4,7 +4,7 @@ var ErrorHandlers = require('./ErrorHandlers');
 
 var loginPassWordFileName = "loginCredentials.txt";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
-var loginURL = "http://distedu.ukma.edu.ua/login/index.php" + " WRONG";
+var loginURL = "http://distedu.ukma.edu.ua/login/index.php";
 var savedLogin;
 var savedPassword;
 //#endregion
@@ -65,7 +65,7 @@ function passwordValid(logPas, successCallback, errorCallback) {
     
     tryAuthenticate(logPas,  function(postResult) {
         // the server returns login page if the password/name was not valid
-        Debug.lg(" POST RESULT : " );
+        Debug.lg(" POST RESULT : ");
         Debug.lg($(postResult).filter('title').text());
 
         if(postResult.search('id=\"login-index\"') < 0) {
@@ -113,9 +113,9 @@ function tryGetLogPassFile(success, failure){
             window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
                 
                 cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
-                    success(file)
+                    success(file);
                 }, function(error) {
-                    failure(error)
+                    failure(error);
                 } );
     
             }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));

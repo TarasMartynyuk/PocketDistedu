@@ -27253,7 +27253,7 @@ var ErrorHandlers = require('./ErrorHandlers');
 
 var loginPassWordFileName = "loginCredentials.txt";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
-var loginURL = "http://distedu.ukma.edu.ua/login/index.php" + " WRONG";
+var loginURL = "http://distedu.ukma.edu.ua/login/index.php";
 var savedLogin;
 var savedPassword;
 //#endregion
@@ -27314,7 +27314,7 @@ function passwordValid(logPas, successCallback, errorCallback) {
     
     tryAuthenticate(logPas,  function(postResult) {
         // the server returns login page if the password/name was not valid
-        Debug.lg(" POST RESULT : " );
+        Debug.lg(" POST RESULT : ");
         Debug.lg($(postResult).filter('title').text());
 
         if(postResult.search('id=\"login-index\"') < 0) {
@@ -27362,9 +27362,9 @@ function tryGetLogPassFile(success, failure){
             window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
                 
                 cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
-                    success(file)
+                    success(file);
                 }, function(error) {
-                    failure(error)
+                    failure(error);
                 } );
     
             }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
@@ -27603,8 +27603,8 @@ module.exports.getCourseResourcesPage = getCourseResourcesPage;
 // for testing, place them in root;
 function init() {
     var debug = false; // when in browser, that is
-    var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.externalDataDirectory;
-//     var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
+//     var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.externalDataDirectory;
+    var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
     var lg = debug? console.log : log;
     var lge = debug? console.error : logError;
     

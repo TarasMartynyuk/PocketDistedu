@@ -27,9 +27,12 @@ function getAllCoursesList(success) {
                 var courseContainer = cher('.info.c1');
                 Debug.lg(courseContainer.children());
                 // Debug.lg(courseContainer.find(':nth-child(2)'));
-                // courseContainer.children().each(function(index, element){
-                //     allCourses.push(element.attr('href'))
-                // });
+                courseContainer.children().each(function(index, element){
+                    // allCourses.push(element.attr('href'))
+                    Debug.lg(index);
+                    Debug.lg(element.attribs.href);
+                
+                });
             },
             error : function(err) {
                 Debug.lge("GET  : \n");

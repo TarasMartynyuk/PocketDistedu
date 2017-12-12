@@ -27253,7 +27253,7 @@ var ErrorHandlers = require('./ErrorHandlers');
 
 var loginPassWordFileName = "loginCredentials.txt";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
-var loginURL = "http://distedu.ukma.edu.ua/login/index.php";
+var loginURL = "http://distedu.ukma.edu.ua/login/index.php" + " WRONG";
 var savedLogin;
 var savedPassword;
 //#endregion
@@ -27288,8 +27288,6 @@ function rewriteLoginPassWord(newLogin, newPassword) {
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
                 Debug.lg("created : " + file.toURL());
-                // Debug.lg("toURL() : " + );
-                // Debug.lg("fullpath : " + file.fullPath);
                 Debug.lg(newLogin);
                 Debug.lg(newPassword);
                 
@@ -27351,7 +27349,7 @@ function tryAuthenticate(logPas, success, error) {
         },
         error : function(err) {
             error("post to login page failed : \n");
-            Debug.lge(err);
+            // Debug.lge(err);
             Debug.lge(err.responseText);
         }
     });
@@ -27388,6 +27386,9 @@ function writeToFile(fileEntry, dataObj) {
         };
 
         fileWriter.write(dataObj);
+    }, function(error) {
+        Debug.lge('could not create writer for file: ' + fileEntry);
+        Debug.lge('returned such error : ' + error);
     });
 }
 
@@ -27601,9 +27602,9 @@ module.exports.getCourseResourcesPage = getCourseResourcesPage;
 },{"./AccountManager":327,"./Debug":331,"cheerio":5}],331:[function(require,module,exports){
 // for testing, place them in root;
 function init() {
-    var debug = true; // when in browser, that is
+    var debug = false; // when in browser, that is
     var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.externalDataDirectory;
-    // var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
+//     var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
     var lg = debug? console.log : log;
     var lge = debug? console.error : logError;
     

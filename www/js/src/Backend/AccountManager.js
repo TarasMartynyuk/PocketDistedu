@@ -4,7 +4,7 @@ var ErrorHandlers = require('./ErrorHandlers');
 
 var loginPassWordFileName = "loginCredentials.txt";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
-var loginURL = "http://distedu.ukma.edu.ua/login/index.php";
+var loginURL = "http://distedu.ukma.edu.ua/login/index.php" + " WRONG";
 var savedLogin;
 var savedPassword;
 //#endregion
@@ -100,7 +100,7 @@ function tryAuthenticate(logPas, success, error) {
         },
         error : function(err) {
             error("post to login page failed : \n");
-            Debug.lge(err);
+            // Debug.lge(err);
             Debug.lge(err.responseText);
         }
     });

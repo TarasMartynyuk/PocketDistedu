@@ -27599,7 +27599,7 @@ module.exports.getCourseResourcesPage = getCourseResourcesPage;
 },{"./AccountManager":327,"./Debug":331,"cheerio":5}],331:[function(require,module,exports){
 // for testing, place them in root;
 function init() {
-    var debug = true; // when in browser, that is
+    var debug = false; // when in browser, that is
     var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.externalDataDirectory;
     // var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
     var lg = debug? console.log : log;

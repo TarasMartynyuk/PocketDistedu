@@ -1,34 +1,22 @@
-// handles distedu data storage, removal
+// handles assignments storage, removal
 // and data requests
 
 //#region path vars
-var PathLookup = require('./PathLookup');
+var Debug = require('./Debug');
 var ErrorHandlers = require('./ErrorHandlers');
 
-var resourcesDirName = "Resources/";
-var assignmentsDirName = "Assignments/";
-var weekDirName = "Week/";
-
-var recoursesPath = PathLookup.cacheRootPath + weekDirName + resourcesDirName;
-var assignmentsPath = PathLookup.cacheRootPath + weekDirName + assignmentsDirName;
-
+// root for all asignments directories - emplty when week is not cached
+var weekDirName = "Week";
+var resourcesDirName = "Resources";
+var assignmentDescrFilename = "description.txt";
 //#endregion
-// var dateChecker = new DateChecker();
 
-
-function initialize() {
-    // var test = PathLookup.cacheRootPath + weekDirName ;
-    // var test = assignmentsPath ;
-    // console.log();
-    // console.log(cordova.file.applicationStorageDirectory);
-    // console.log(cordova.file);
+// creates a folder for assignment with all needed data cached there
+function cacheAssignmentData(assignment) {
     
-    var test = cordova.file.applicationStorageDirectory;
-    // log("TEST PASSED");
-    // log("TEST PASSED");
-    // log("TEST PASSED");
-    
+}
 
+<<<<<<< HEAD
     window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function (fs) {
         
         log('searching for : applicationStorageDirectory : ' + cordova.file.applicationStorageDirectory);
@@ -106,19 +94,29 @@ function createCacheDirs(instance, resourcesDirName, assignmentsDirName) {
 function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
     onCreatedCallback = onCreatedCallback || function(dirEntry) {
         log('created dir ' + dirEntry.toURL());
+=======
+function deleteAssignmentData(assignment) {
+
+}
+
+// onCreatedCallback recieves created dir as argument
+function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
+    onCreatedCallback = onCreatedCallback || function(dirEntry) {
+        Debug.lg('created dir ' + dirEntry.toURL());
+>>>>>>> TarasMartynyuk
     };
     rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, ErrorHandlers.onErrorGetDir(newDirName));
 }
 //#endregion
 
-function log(message) {
+module.exports.cacheAssignmentData = cacheAssignmentData;
+module.exports.assignmentDescrFilename = assignmentDescrFilename;
+module.exports.resourcesDirName = resourcesDirName;
 
-    logP = document.createElement("p");
-    $(logP).text(message);
-    $('#console').append(logP);
-}
 
-module.exports.initialize = initialize;
+
+
+
 
 
 

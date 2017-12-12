@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "brfs": "^1.4.3",
+    "cheerio": "^1.0.0-rc.2",
     "cordova-android": "~6.3.0",
     "cordova-plugin-battery-status": "~1.2.4",
     "cordova-plugin-camera": "~2.4.1",
@@ -37,6 +38,7 @@
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.2.0",
     "grunt-cli": "^1.2.0",
-    "grunt-contrib-watch": "^1.0.0"
+    "grunt-contrib-watch": "^1.0.0",
+    "jssoup": "0.0.6"
   }
 }

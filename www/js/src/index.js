@@ -18,7 +18,7 @@ var CourseManager = require("./Backend/CourseManager");
 
     onDeviceReady: function() {
         Debug.init();
-        Debug.lg("DEVIEREADY");
+        Debug.lg("DEVICEREADY");
 
 
         $('#submit').click(function () {
@@ -30,23 +30,26 @@ var CourseManager = require("./Backend/CourseManager");
 
             AccountManager.rewriteLoginPassWord(login, password);
 
-            });
+        });
         
         
         $('#test-file').click(function () {
 
             AccountManager.savedPasswordValid(function(logPas) {
-                Debug.lg(logPas.login);
-                Debug.lg(logPas.password);
-            //     CourseManager.coursesSerialized(function () {
-            //         Debug.lg("COURSES DESERIALIZED");
-            //     }, function() {
-            //         Debug.lg("COURSES NOT FOUND");
-            //         // filter all available user's courses
-                    DisteduDownloader.getAllCoursesList(function(allCourses) {
-    
-                    });
-                // });
+                // Debug.lg(logPas.login);
+                // Debug.lg(logPas.password);
+                CourseManager.coursesSerialized(function () {
+                    Debug.lg("COURSES DESERIALIZED");
+                }, function(error) {
+                    Debug.lge("COURSES NOT FOUND : ");
+                    Debug.lge(error);
+                    // filter all available user's courses
+                    // DisteduDownloader.getAllCoursesList(function(allCourses) {
+                    //     Debug.lg(allCourses);
+                    // });
+                    // CourseManager.saveUserCourses();
+                });
+
             }, function(error) {
                 Debug.lge(error);
             });
@@ -60,4 +63,4 @@ var CourseManager = require("./Backend/CourseManager");
 $(function(){
     app.initialize();
 });
-// module.exports.App = app;
+module.exports.App = app;

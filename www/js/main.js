@@ -27250,6 +27250,7 @@ function hasOwnProperty(obj, prop) {
 //#region defs
 var Debug = require('./Debug');
 var ErrorHandlers = require('./ErrorHandlers');
+var FileWriter = require('./FileWriter');
 
 var loginPassWordFileName = "loginCredentials.txt";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
@@ -27291,7 +27292,7 @@ function rewriteLoginPassWord(newLogin, newPassword) {
                 Debug.lg(newLogin);
                 Debug.lg(newPassword);
                 
-                writeToFile(file, new Blob([newLogin + "\n" + newPassword]));
+                FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]));
                 
             }, ErrorHandlers.onLocalUrlError(loginPassWordFileName));
         }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
@@ -27331,9 +27332,9 @@ function passwordValid(logPas, successCallback, errorCallback) {
 //#region helpers
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
-    // Debug.lg("AUTH  FUNC");
-    Debug.lg(" AUTH\n" + logPas.login);
-    Debug.lg(" AUTH\n" + logPas.password);
+    Debug.lg("AUTH  FUNC");
+    // Debug.lg(" AUTH\n" + logPas.login);
+    // Debug.lg(" AUTH\n" + logPas.password);
     Debug.lg("posting to : " + loginURL);
     $.ajax({
         type : "POST",
@@ -27369,30 +27370,7 @@ function tryGetLogPassFile(success, failure){
             }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
     }
 // success takes 0 arguments
-function writeToFile(fileEntry, dataObj) {
-    // Create a FileWriter object for our FileEntry (log.txt).
 
-    Debug.lg("dataobj " + dataObj);
-    // delete prev contents
-    fileEntry.createWriter((fileWriter)=>fileWriter.truncate(0));
-
-    fileEntry.createWriter(function (fileWriter) {
-
-        fileWriter.onwriteend = function() {
-            Debug.lg("Successful file write : " + fileEntry);
-            Debug.lg(dataObj);
-        };
-
-        fileWriter.onerror = function (e) {
-            console.error("Failed file write: " + fileEntry + "\nerror : " + e.toString());
-        };
-
-        fileWriter.write(dataObj);
-    }, function(error) {
-        Debug.lge('could not create writer for file: ' + fileEntry);
-        Debug.lge('returned such error : ' + error);
-    });
-}
 
 // successCallback recieves {login, password} as argument
 function getLoginPassword(success, failure) {
@@ -27423,7 +27401,7 @@ function getLoginPassword(success, failure) {
 module.exports.rewriteLoginPassWord = rewriteLoginPassWord;
 module.exports.savedPasswordValid = savedPasswordValid;
 module.exports.getAuthPage = getAuthPage;
-},{"./Debug":331,"./ErrorHandlers":332}],328:[function(require,module,exports){
+},{"./Debug":331,"./ErrorHandlers":333,"./FileWriter":334}],328:[function(require,module,exports){
 // handles assignments storage, removal
 // and data requests
 
@@ -27472,12 +27450,20 @@ module.exports.resourcesDirName = resourcesDirName;
 
 
 
-},{"./Debug":331,"./ErrorHandlers":332}],329:[function(require,module,exports){
+},{"./Debug":331,"./ErrorHandlers":333}],329:[function(require,module,exports){
 var Debug = require("./Debug");
 var ErrorHandlers = require("./ErrorHandlers");
+var CourseClass = require('./data classes/CourseClass');
+var FileWriter = require('./FileWriter');
+
+
 var userCourses = [];
 var coursesJsonName = "userCourses.json";
 
+var filteredCourses = [
+    new CourseClass.Course("JavaScript", 189),
+    new CourseClass.Course("Основи комп'ютерних алгоритмів на Java", 131)
+]
 
 // success takes 0 args, 
 // is run when userCourses where successfully retrieved from disk
@@ -27492,6 +27478,9 @@ function coursesSerialized(success, failure) {
             reader.onloadend = function (e) {
                 try {
                     userCourses = JSON.parse(this.result);
+                    Debug.lg(userCourses);
+
+                    success();
                 } catch(e) {
                     failure(e);
                 }
@@ -27499,9 +27488,13 @@ function coursesSerialized(success, failure) {
 
             reader.readAsText(file);
 
-        }, failure( "cannot read file : "+ Debug.cacheRootPath + coursesJsonName));
+        }, function(error) {
+            failure( "cannot read file : "+ Debug.cacheRootPath + coursesJsonName)
+        });
 
-    }, failure( "cannot find URL : " + Debug.cacheRootPath + coursesJsonName));
+    }, function(error) {
+        failure("cannot find URL : " + Debug.cacheRootPath + coursesJsonName);
+    });
 
 }
 
@@ -27513,32 +27506,35 @@ function update() {
 
 // pass user - filtered array of courses as arg,
 // serializes it to be able to use in next sessions
-function saveUserCourses(filteredCourses) {
-    // window.PERSISTENT, 5 * 1024, function(fs) {
-    //     fs.readFile(coursesJsonName, function (error, data){
-    //         if(!error) {
-    //             success();
-    //         } else {
-    //             Debug.lg("did not found courses JSON");
-    //             failure();
-    //         }
-    //     });
+function saveUserCourses() {
+    window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
 
-    // }, function(error){
-    //     Debug.lge(error);
-    // }
+        cacheRootDir.getFile(coursesJsonName, {create : true}, function(file) {
+            // write json
+            writeObjToFile(file, filteredCourses);
+
+
+        }, ErrorHandlers.onErrorCreateFile(Debug.cacheRootPath + coursesJsonName));
+    }, ErrorHandlers.onErrorGetDir(Debug.cacheRootPath));
 }
 
-//#region 
 
+
+//#region 
+function writeObjToFile(file, obj) {
+    Debug.lg("JSONNED obj : " + JSON.stringify(obj));
+    FileWriter.write(file, new Blob([JSON.stringify(obj)]));
+}
 
 //#endregion
 
 module.exports.coursesSerialized = coursesSerialized;
-},{"./Debug":331,"./ErrorHandlers":332}],330:[function(require,module,exports){
+module.exports.saveUserCourses = saveUserCourses;
+},{"./Debug":331,"./ErrorHandlers":333,"./FileWriter":334,"./data classes/CourseClass":335}],330:[function(require,module,exports){
 var AccountManager = require('./AccountManager');
 var Debug = require('./Debug');
 var cheerio = require('cheerio');
+var CourseClass = require('./data classes/CourseClass');
 
 // success takes list of all courses of user (using his data from AccountManager) as argument, 
 // in format [{ string_name : int_id, otherEntry, ...}]
@@ -27557,22 +27553,20 @@ function getAllCoursesList(success) {
             type : "GET",
             url : userPageURL,
             success : function(data) {
-                // success(data);
                 cher = cheerio.load(data);
                 Debug.lg(cher('title').text());
                 
                 var allCourses = [];
                 var courseContainer = cher('.info.c1');
                 Debug.lg(courseContainer.children());
-                // Debug.lg(courseContainer.find(':nth-child(2)'));
                 courseContainer.children().each(function(index, element){
-                    // allCourses.push(element.attr('href'))
-                    Debug.lg(index);
-                    Debug.lg(element.attribs.href);
-                    Debug.lg(element.firstChild.data);
-                    
-                
+
+                    var id = element.attribs.href.match(/[0-9]+$/i)[0];
+                    var course = new CourseClass.Course(element.firstChild.data, id);
+                    // Debug.lg(course);
+                    allCourses.push(course);
                 });
+                success(allCourses);
             },
             error : function(err) {
                 Debug.lge("GET  : \n");
@@ -27606,11 +27600,11 @@ module.exports.getCourseResourcesPage = getCourseResourcesPage;
 
 
 
-},{"./AccountManager":327,"./Debug":331,"cheerio":5}],331:[function(require,module,exports){
+},{"./AccountManager":327,"./Debug":331,"./data classes/CourseClass":335,"cheerio":5}],331:[function(require,module,exports){
 // for testing, place them in root;
 function init() {
 
-    var debug = false; // when in browser, that is
+    var debug = true; // when in browser, that is
     var cacheRootPath = debug? "filesystem:http://192.168.0.103:3000/persistent/" : cordova.file.externalDataDirectory;
 //     var cacheRootPath = "filesystem:http://192.168.0.103:3000/persistent/";
     
@@ -27678,6 +27672,8 @@ module.exports.init = init;
 
 
 },{}],332:[function(require,module,exports){
+arguments[4][330][0].apply(exports,arguments)
+},{"./AccountManager":327,"./Debug":331,"./data classes/CourseClass":335,"cheerio":5,"dup":330}],333:[function(require,module,exports){
 var Debug = require('./Debug');
 
 function onLocalUrlError(URL) {
@@ -27712,7 +27708,79 @@ module.exports.onErrorReadFile = onErrorReadFile;
 
 
 
-},{"./Debug":331}],333:[function(require,module,exports){
+},{"./Debug":331}],334:[function(require,module,exports){
+var Debug = require('./Debug');
+// dataObj type is Blob
+function write(fileEntry, dataObj) {
+    // Create a FileWriter object for our FileEntry (log.txt).
+
+    Debug.lg("dataobj " + dataObj);
+    // delete prev contents
+    fileEntry.createWriter((fileWriter)=>fileWriter.truncate(0));
+
+    fileEntry.createWriter(function (fileWriter) {
+
+        fileWriter.onwriteend = function() {
+            Debug.lg("Successful file write : " + fileEntry);
+            Debug.lg(dataObj);
+        };
+
+        fileWriter.onerror = function (e) {
+            console.error("Failed file write: " + fileEntry + "\nerror : " + e.toString());
+        };
+
+        fileWriter.write(dataObj);
+    }, function(error) {
+        Debug.lge('could not create writer for file: ' + fileEntry);
+        Debug.lge('returned such error : ' + error);
+    });
+}
+
+module.exports.write = write;
+},{"./Debug":331}],335:[function(require,module,exports){
+var DisteduDownloader = require('../DisteduDownloader');
+var CacheManager = require('../CacheManager');
+
+function Course(name, id) {
+    this.name = name;
+    // used to find assignment pages
+    this.id = id;
+    // Assignment object representing every upcoming assignment 
+    this.futureAssignments = [];
+}
+
+Course.prototype = {
+    cacheAssignment : function(assignment) {
+
+    },
+    removeAssignment : function () {
+
+    }
+}
+
+module.exports.Course = Course;
+
+// module.exports = class Course {
+//     constructor (name, id) {
+//         this.name = name;
+//         // used to find assignment pages
+//         this.id = id;
+//         // Assignment object representing every upcoming assignment 
+//         this.futureAssignments = [];
+//     }
+
+//     cacheAssignment (assignment) {
+        
+//     }
+            
+//     removeAssignment() {
+        
+//     }
+
+// }
+
+
+},{"../CacheManager":328,"../DisteduDownloader":332}],336:[function(require,module,exports){
 // #region require
 var AccountManager = require('./Backend/AccountManager');
 var CacheManager = require('./Backend/CacheManager');
@@ -27733,7 +27801,7 @@ var CourseManager = require("./Backend/CourseManager");
 
     onDeviceReady: function() {
         Debug.init();
-        Debug.lg("DEVIEREADY");
+        Debug.lg("DEVICEREADY");
 
 
         $('#submit').click(function () {
@@ -27745,23 +27813,26 @@ var CourseManager = require("./Backend/CourseManager");
 
             AccountManager.rewriteLoginPassWord(login, password);
 
-            });
+        });
         
         
         $('#test-file').click(function () {
 
             AccountManager.savedPasswordValid(function(logPas) {
-                Debug.lg(logPas.login);
-                Debug.lg(logPas.password);
-            //     CourseManager.coursesSerialized(function () {
-            //         Debug.lg("COURSES DESERIALIZED");
-            //     }, function() {
-            //         Debug.lg("COURSES NOT FOUND");
-            //         // filter all available user's courses
-                    DisteduDownloader.getAllCoursesList(function(allCourses) {
-    
-                    });
-                // });
+                // Debug.lg(logPas.login);
+                // Debug.lg(logPas.password);
+                CourseManager.coursesSerialized(function () {
+                    Debug.lg("COURSES DESERIALIZED");
+                }, function(error) {
+                    Debug.lge("COURSES NOT FOUND : ");
+                    Debug.lge(error);
+                    // filter all available user's courses
+                    // DisteduDownloader.getAllCoursesList(function(allCourses) {
+                    //     Debug.lg(allCourses);
+                    // });
+                    // CourseManager.saveUserCourses();
+                });
+
             }, function(error) {
                 Debug.lge(error);
             });
@@ -27775,6 +27846,6 @@ var CourseManager = require("./Backend/CourseManager");
 $(function(){
     app.initialize();
 });
-// module.exports.App = app;
+module.exports.App = app;
 
-},{"./Backend/AccountManager":327,"./Backend/CacheManager":328,"./Backend/CourseManager":329,"./Backend/DIsteduDownloader":330,"./Backend/Debug":331}]},{},[333]);
+},{"./Backend/AccountManager":327,"./Backend/CacheManager":328,"./Backend/CourseManager":329,"./Backend/DIsteduDownloader":330,"./Backend/Debug":331}]},{},[336]);

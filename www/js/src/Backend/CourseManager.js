@@ -1,8 +1,16 @@
 var Debug = require("./Debug");
 var ErrorHandlers = require("./ErrorHandlers");
+var CourseClass = require('./data classes/CourseClass');
+var FileWriter = require('./FileWriter');
+
+
 var userCourses = [];
 var coursesJsonName = "userCourses.json";
-const fs = require('fs');
+
+var filteredCourses = [
+    new CourseClass.Course("JavaScript", 189),
+    new CourseClass.Course("Основи комп'ютерних алгоритмів на Java", 131)
+]
 
 // success takes 0 args, 
 // is run when userCourses where successfully retrieved from disk
@@ -17,6 +25,9 @@ function coursesSerialized(success, failure) {
             reader.onloadend = function (e) {
                 try {
                     userCourses = JSON.parse(this.result);
+                    Debug.lg(userCourses);
+
+                    success();
                 } catch(e) {
                     failure(e);
                 }
@@ -24,9 +35,13 @@ function coursesSerialized(success, failure) {
 
             reader.readAsText(file);
 
-        }, failure( "cannot read file : "+ Debug.cacheRootPath + coursesJsonName));
+        }, function(error) {
+            failure( "cannot read file : "+ Debug.cacheRootPath + coursesJsonName)
+        });
 
-    }, failure( "cannot find URL : " + Debug.cacheRootPath + coursesJsonName));
+    }, function(error) {
+        failure("cannot find URL : " + Debug.cacheRootPath + coursesJsonName);
+    });
 
 }
 
@@ -38,25 +53,27 @@ function update() {
 
 // pass user - filtered array of courses as arg,
 // serializes it to be able to use in next sessions
-function saveUserCourses(filteredCourses) {
-    // window.PERSISTENT, 5 * 1024, function(fs) {
-    //     fs.readFile(coursesJsonName, function (error, data){
-    //         if(!error) {
-    //             success();
-    //         } else {
-    //             Debug.lg("did not found courses JSON");
-    //             failure();
-    //         }
-    //     });
+function saveUserCourses() {
+    window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
 
-    // }, function(error){
-    //     Debug.lge(error);
-    // }
+        cacheRootDir.getFile(coursesJsonName, {create : true}, function(file) {
+            // write json
+            writeObjToFile(file, filteredCourses);
+
+
+        }, ErrorHandlers.onErrorCreateFile(Debug.cacheRootPath + coursesJsonName));
+    }, ErrorHandlers.onErrorGetDir(Debug.cacheRootPath));
 }
 
-//#region 
 
+
+//#region 
+function writeObjToFile(file, obj) {
+    Debug.lg("JSONNED obj : " + JSON.stringify(obj));
+    FileWriter.write(file, new Blob([JSON.stringify(obj)]));
+}
 
 //#endregion
 
 module.exports.coursesSerialized = coursesSerialized;
+module.exports.saveUserCourses = saveUserCourses;

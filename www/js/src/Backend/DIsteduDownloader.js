@@ -1,6 +1,7 @@
 var AccountManager = require('./AccountManager');
 var Debug = require('./Debug');
 var cheerio = require('cheerio');
+var CourseClass = require('./data classes/CourseClass');
 
 // success takes list of all courses of user (using his data from AccountManager) as argument, 
 // in format [{ string_name : int_id, otherEntry, ...}]
@@ -19,22 +20,20 @@ function getAllCoursesList(success) {
             type : "GET",
             url : userPageURL,
             success : function(data) {
-                // success(data);
                 cher = cheerio.load(data);
                 Debug.lg(cher('title').text());
                 
                 var allCourses = [];
                 var courseContainer = cher('.info.c1');
                 Debug.lg(courseContainer.children());
-                // Debug.lg(courseContainer.find(':nth-child(2)'));
                 courseContainer.children().each(function(index, element){
-                    // allCourses.push(element.attr('href'))
-                    Debug.lg(index);
-                    Debug.lg(element.attribs.href);
-                    Debug.lg(element.firstChild.data);
-                    
-                
+
+                    var id = element.attribs.href.match(/[0-9]+$/i)[0];
+                    var course = new CourseClass.Course(element.firstChild.data, id);
+                    // Debug.lg(course);
+                    allCourses.push(course);
                 });
+                success(allCourses);
             },
             error : function(err) {
                 Debug.lge("GET  : \n");

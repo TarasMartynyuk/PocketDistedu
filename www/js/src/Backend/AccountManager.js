@@ -1,6 +1,7 @@
 //#region defs
 var Debug = require('./Debug');
 var ErrorHandlers = require('./ErrorHandlers');
+var FileWriter = require('./FileWriter');
 
 var loginPassWordFileName = "loginCredentials.txt";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
@@ -42,7 +43,7 @@ function rewriteLoginPassWord(newLogin, newPassword) {
                 Debug.lg(newLogin);
                 Debug.lg(newPassword);
                 
-                writeToFile(file, new Blob([newLogin + "\n" + newPassword]));
+                FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]));
                 
             }, ErrorHandlers.onLocalUrlError(loginPassWordFileName));
         }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
@@ -82,9 +83,9 @@ function passwordValid(logPas, successCallback, errorCallback) {
 //#region helpers
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, error) {
-    // Debug.lg("AUTH  FUNC");
-    Debug.lg(" AUTH\n" + logPas.login);
-    Debug.lg(" AUTH\n" + logPas.password);
+    Debug.lg("AUTH  FUNC");
+    // Debug.lg(" AUTH\n" + logPas.login);
+    // Debug.lg(" AUTH\n" + logPas.password);
     Debug.lg("posting to : " + loginURL);
     $.ajax({
         type : "POST",
@@ -120,30 +121,7 @@ function tryGetLogPassFile(success, failure){
             }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
     }
 // success takes 0 arguments
-function writeToFile(fileEntry, dataObj) {
-    // Create a FileWriter object for our FileEntry (log.txt).
 
-    Debug.lg("dataobj " + dataObj);
-    // delete prev contents
-    fileEntry.createWriter((fileWriter)=>fileWriter.truncate(0));
-
-    fileEntry.createWriter(function (fileWriter) {
-
-        fileWriter.onwriteend = function() {
-            Debug.lg("Successful file write : " + fileEntry);
-            Debug.lg(dataObj);
-        };
-
-        fileWriter.onerror = function (e) {
-            console.error("Failed file write: " + fileEntry + "\nerror : " + e.toString());
-        };
-
-        fileWriter.write(dataObj);
-    }, function(error) {
-        Debug.lge('could not create writer for file: ' + fileEntry);
-        Debug.lge('returned such error : ' + error);
-    });
-}
 
 // successCallback recieves {login, password} as argument
 function getLoginPassword(success, failure) {

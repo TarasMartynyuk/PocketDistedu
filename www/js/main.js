@@ -27252,7 +27252,7 @@ var Debug = require('./Debug');
 var ErrorHandlers = require('./ErrorHandlers');
 var FileWriter = require('./FileWriter');
 
-var loginPassWordFileName = "loginCredentials.txt";
+var loginPassWordFileName = "loginCredentials.txt" + "dasdsad";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
 var loginURL = "http://distedu.ukma.edu.ua/login/index.php";
 var savedLogin;
@@ -27293,12 +27293,12 @@ function rewriteLoginPassWord(newLogin, newPassword) {
                 FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]));
                 
             }, function(error) {
-                addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
-                failure(error);
+                var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
+                failure(commentedError);
             });
         }, function(error) {
-            addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
-            failure(error);
+            var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+            failure(commentedError);
         });
 }
 
@@ -27329,7 +27329,7 @@ function passwordValid(logPas, success, failure) {
         }
 
     }, function (error) {
-        failure(error);
+        failure(commentedError);
     });
 }
 
@@ -27355,8 +27355,8 @@ function tryAuthenticate(logPas, success, failure) {
             error(" : \n");
             Debug.lge("Server Error .responseText : " + err.responseText);
 
-            addCommentPrefix(error, 'post to login page failed - ' + loginURL);
-            failure(error);
+            var commentedError = addCommentPrefix(error, 'post to login page failed - ' + loginURL);
+            failure(commentedError);
         }
     });
 }
@@ -27370,12 +27370,17 @@ function tryGetLogPassFile(success, failure){
                 cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
                     success(file);
                 }, function(error) {
-                    failure(error);
+                    var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
+                    Debug.lg("getlogpas : " + error);
+                    Debug.lg("getlogpas message: " + error.message);
+                    
+            
+                    failure(commentedError);
                 } );
     
             }, function(error) {
-                addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
-                failure(error);
+                var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+                failure(commentedError);
             });
     }
 // success takes 0 arguments
@@ -27400,18 +27405,22 @@ function getLoginPassword(success, failure) {
             };
             reader.readAsText(file);
         }, function(error) {
-            addCommentPrefix(error, 'Error reading  file ' + filename);
-            failure(error);
+            var commentedError = addCommentPrefix(error, 'Error reading  file ' + filename);
+            failure(commentedError);
         });
 
     }, function(error) {
-        addCommentPrefix(error, "login-password file does not exist yet -");
-        failure(error);
+        var commentedError = addCommentPrefix(error, "login-password file does not exist yet -");
+        failure(commentedError);
     });
+}
 
-    function addCommentPrefix(error, comment) {
-        error.message = comment + " , throwed such error:\n" + error.message;
-    }
+// returnnes new erorr obj, whose message will have comment appended at start
+function addCommentPrefix(error, comment) {
+    // error.message = ;
+    // var commentedError = ;
+    // Debug.lg("var commentedError = addCommentPrefix message: " + commentedError.message);
+    return new Error(comment + " , threw such error:\n" + error.message);
 }
 //#endregion
 
@@ -27524,7 +27533,11 @@ function saveUserCoursesTable() {
         // Debug.lg(filteredCourses[i].id);
         // Debug.lg(filteredCourses[i].course);
         // use course id to get all future assignments and construct idToAssignmentArr
-        
+        DisteduDownloader.getCourseAssignments(filteredCourses[i].id, function(futureAssignments){
+
+        }, function (error){
+            
+        });
     }
 
     rewriteCoursesTable(filteredCourses);
@@ -27764,41 +27777,41 @@ module.exports.init = init;
 
 
 },{}],332:[function(require,module,exports){
-var Debug = require('./Debug');
+// var Debug = require('./Debug');
 
-function onLocalUrlError(URL) {
-    return function(error) {
-        Debug.lge(" error resolving URL: " + URL);
-        Debug.lge("returned such error: " + error);
-    }
-}
+// function onLocalUrlError(URL) {
+//     return function(error) {
+//         Debug.lge(" error resolving URL: " + URL);
+//         Debug.lge("returned such error: " + error);
+//     }
+// }
 
-function onErrorGetDir(newDirName) {
-    return function(error) {
-        Debug.lge('Error getting dir ' + newDirName + "\n" + error);
-    }
-}
+// function onErrorGetDir(newDirName) {
+//     return function(error) {
+//         Debug.lge('Error getting dir ' + newDirName + "\n" + error);
+//     }
+// }
 
-function onErrorCreateFile(newFileName) {
-    return function(error) {
-        Debug.lge('Error creating  file ' + newFileName + "\n" + error);
-    }
-}
+// function onErrorCreateFile(newFileName) {
+//     return function(error) {
+//         Debug.lge('Error creating  file ' + newFileName + "\n" + error);
+//     }
+// }
 
-function onErrorReadFile(filename) {
-    return function(error) {
-        Debug.lge('Error reading  file ' + filename + "\n" + error);
-    }
-}
+// function onErrorReadFile(filename) {
+//     return function(error) {
+//         Debug.lge('Error reading  file ' + filename + "\n" + error);
+//     }
+// }
 
-module.exports.onLocalUrlError = onLocalUrlError;
-module.exports.onErrorGetDir = onErrorGetDir;
-module.exports.onErrorCreateFile = onErrorCreateFile;
-module.exports.onErrorReadFile = onErrorReadFile;
+// module.exports.onLocalUrlError = onLocalUrlError;
+// module.exports.onErrorGetDir = onErrorGetDir;
+// module.exports.onErrorCreateFile = onErrorCreateFile;
+// module.exports.onErrorReadFile = onErrorReadFile;
 
 
 
-},{"./Debug":331}],333:[function(require,module,exports){
+},{}],333:[function(require,module,exports){
 var Debug = require('./Debug');
 // dataObj type is Blob
 function write(fileEntry, dataObj) {
@@ -27915,29 +27928,25 @@ var CourseManager = require("./Backend/CourseManager");
         
         $('#test-file').click(function () {
 
-            // AccountManager.savedPasswordValid(function(logPas) {
-            //     // Debug.lg(logPas.login);
-            //     // Debug.lg(logPas.password);
-            //     CourseManager.tryLoadSerializedCourses(function () {
-            //         Debug.lg("COURSES DESERIALIZED");
-            //     }, function(error) {
-            //         Debug.lge("COURSES NOT FOUND : ");
-            //         Debug.lge(error);
-            //         // filter all available user's courses
-            //         // DisteduDownloader.getAllCoursesList(function(allCourses) {
-            //         //     Debug.lg(allCourses);
-            //         // });
-            //     });
-            //     // CourseManager.saveUserCoursesTable();
+            AccountManager.savedPasswordValid(function(logPas) {
+                // Debug.lg(logPas.login);
+                // Debug.lg(logPas.password);
+                CourseManager.tryLoadSerializedCourses(function () {
+                    Debug.lg("COURSES DESERIALIZED");
+                }, function(error) {
+                    Debug.lge("COURSES NOT FOUND : ");
+                    Debug.lge(error);
+                    // filter all available user's courses
+                    // DisteduDownloader.getAllCoursesList(function(allCourses) {
+                    //     Debug.lg(allCourses);
+                    // });
+                });
+                // CourseManager.saveUserCoursesTable();
 
-            // }, function(error) {
-            //     Debug.lge(error);
-            // });
-            window.resolveLocalFileSystemURL("NOT VALID", function(){
-            }, function(error){
-                Debug.lg(error);
-                Debug.lg(error.message);
-            })
+            }, function(error) {
+                Debug.lge(error);
+                // Debug.lge("message" + error.message);
+            });
 
         });
             

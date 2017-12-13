@@ -54,7 +54,11 @@ function saveUserCoursesTable() {
         // Debug.lg(filteredCourses[i].id);
         // Debug.lg(filteredCourses[i].course);
         // use course id to get all future assignments and construct idToAssignmentArr
-        
+        DisteduDownloader.getCourseAssignments(filteredCourses[i].id, function(futureAssignments){
+
+        }, function (error){
+            
+        });
     }
 
     rewriteCoursesTable(filteredCourses);

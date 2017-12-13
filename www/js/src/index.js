@@ -35,24 +35,29 @@ var CourseManager = require("./Backend/CourseManager");
         
         $('#test-file').click(function () {
 
-            AccountManager.savedPasswordValid(function(logPas) {
-                // Debug.lg(logPas.login);
-                // Debug.lg(logPas.password);
-                CourseManager.coursesSerialized(function () {
-                    Debug.lg("COURSES DESERIALIZED");
-                }, function(error) {
-                    Debug.lge("COURSES NOT FOUND : ");
-                    Debug.lge(error);
-                    // filter all available user's courses
-                    // DisteduDownloader.getAllCoursesList(function(allCourses) {
-                    //     Debug.lg(allCourses);
-                    // });
-                    // CourseManager.saveUserCourses();
-                });
+            // AccountManager.savedPasswordValid(function(logPas) {
+            //     // Debug.lg(logPas.login);
+            //     // Debug.lg(logPas.password);
+            //     CourseManager.tryLoadSerializedCourses(function () {
+            //         Debug.lg("COURSES DESERIALIZED");
+            //     }, function(error) {
+            //         Debug.lge("COURSES NOT FOUND : ");
+            //         Debug.lge(error);
+            //         // filter all available user's courses
+            //         // DisteduDownloader.getAllCoursesList(function(allCourses) {
+            //         //     Debug.lg(allCourses);
+            //         // });
+            //     });
+            //     // CourseManager.saveUserCoursesTable();
 
-            }, function(error) {
-                Debug.lge(error);
-            });
+            // }, function(error) {
+            //     Debug.lge(error);
+            // });
+            window.resolveLocalFileSystemURL("NOT VALID", function(){
+            }, function(error){
+                Debug.lg(error);
+                Debug.lg(error.message);
+            })
 
         });
             

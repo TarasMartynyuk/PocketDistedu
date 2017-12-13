@@ -25,4 +25,10 @@ function write(fileEntry, dataObj) {
     });
 }
 
+function writeObjToFile(file, obj) {
+    Debug.lg("JSONNED obj : " + JSON.stringify(obj));
+    write(file, new Blob([JSON.stringify(obj)]));
+}
+
 module.exports.write = write;
+module.exports.writeObjToFile = writeObjToFile;

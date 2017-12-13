@@ -40,25 +40,29 @@ function rewriteLoginPassWord(newLogin, newPassword) {
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
                 Debug.lg("created : " + file.toURL());
-                Debug.lg(newLogin);
-                Debug.lg(newPassword);
                 
                 FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]));
                 
-            }, ErrorHandlers.onLocalUrlError(loginPassWordFileName));
-        }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
+            }, function(error) {
+                addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
+                failure(error);
+            });
+        }, function(error) {
+            addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+            failure(error);
+        });
 }
 
 // success recieves loginned page as argument
-function getAuthPage(success, error) {
+function getAuthPage(success, failure) {
     tryAuthenticate({ login : savedLogin,
         password : savedPassword
-    }, success, error);
+    }, success, failure);
 }
 
 // if pass is valid calls success callback with login and password passed as parameters
 // else passes error to errorCallback and calls it
-function passwordValid(logPas, successCallback, errorCallback) {
+function passwordValid(logPas, success, failure) {
 
     // Debug.lg("PASSWORD VALID FUNC");
     
@@ -69,20 +73,20 @@ function passwordValid(logPas, successCallback, errorCallback) {
 
         if(postResult.search('id=\"login-index\"') < 0) {
             Debug.lg("PASS VALID");
-            successCallback(logPas);
+            success(logPas);
 
         } else {
-            errorCallback("the saved login and password did not pass the authentication");
+            failure(new Error("the saved login and password did not pass the authentication"));
         }
 
     }, function (error) {
-        Debug.lge(error);
+        failure(error);
     });
 }
 
 //#region helpers
 // success takes authPage and logPas as arguments 
-function tryAuthenticate(logPas, success, error) {
+function tryAuthenticate(logPas, success, failure) {
     Debug.lg("AUTH  FUNC");
     // Debug.lg(" AUTH\n" + logPas.login);
     // Debug.lg(" AUTH\n" + logPas.password);
@@ -98,10 +102,12 @@ function tryAuthenticate(logPas, success, error) {
         success : function(data) {
             success(data);
         },
-        error : function(err) {
-            error("post to login page failed : \n");
-            Debug.lge(err);
-            Debug.lge(err.responseText);
+        error : function(error) {
+            error(" : \n");
+            Debug.lge("Server Error .responseText : " + err.responseText);
+
+            addCommentPrefix(error, 'post to login page failed - ' + loginURL);
+            failure(error);
         }
     });
 }
@@ -118,7 +124,10 @@ function tryGetLogPassFile(success, failure){
                     failure(error);
                 } );
     
-            }, ErrorHandlers.onLocalUrlError(Debug.cacheRootPath));
+            }, function(error) {
+                addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+                failure(error);
+            });
     }
 // success takes 0 arguments
 
@@ -141,11 +150,19 @@ function getLoginPassword(success, failure) {
                 });
             };
             reader.readAsText(file);
-        }, ErrorHandlers.onErrorReadFile);
+        }, function(error) {
+            addCommentPrefix(error, 'Error reading  file ' + filename);
+            failure(error);
+        });
 
     }, function(error) {
-        failure("login-password file does not exist yet");
+        addCommentPrefix(error, "login-password file does not exist yet -");
+        failure(error);
     });
+
+    function addCommentPrefix(error, comment) {
+        error.message = comment + " , throwed such error:\n" + error.message;
+    }
 }
 //#endregion
 

@@ -1,10 +1,18 @@
+//#region defs
 var AccountManager = require('./AccountManager');
 var Debug = require('./Debug');
 var cheerio = require('cheerio');
 var CourseClass = require('./data classes/CourseClass');
 
+// just add water(crossed out) id
+var assignmentsPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/index.php?id=";
+var resourcesPageTemplate = "http://distedu.ukma.edu.ua/mod/resource/index.php?id=";
+
+//#endregion
+
+
 // success takes list of all courses of user (using his data from AccountManager) as argument, 
-// in format [{ string_name : int_id, otherEntry, ...}]
+// in format [{id, course}]
 function getAllCoursesList(success) {
     // first, get the after-login page
     AccountManager.getAuthPage( function(afterLoginPage){
@@ -31,7 +39,11 @@ function getAllCoursesList(success) {
                     var id = element.attribs.href.match(/[0-9]+$/i)[0];
                     var course = new CourseClass.Course(element.firstChild.data, id);
                     // Debug.lg(course);
-                    allCourses.push(course);
+                    allCourses.push({ 
+                        id : id, 
+                        course : course
+                        }
+                    );
                 });
                 success(allCourses);
             },
@@ -51,18 +63,54 @@ function getAllCoursesList(success) {
     });
 }
 
-// success takes HTML string with all courses assignments as arg
-function getCourseAssignmentsPage(course, success) {
+// success takes  courses assignments as arg
+// considers only corses whose deadline is later than filterDate
+function getCourseAssignments(courseId, success, filterDate) {
     
+    AccountManager.getAuthPage(function (loggedInPage){
+
+        var assignmentsPageUrl = assignmentsPageTemplate + courseId;
+        Debug,lg("fetching asses for from assignments page : " + assignmentsPageUrl);
+        
+        getPage(assignmentsPageUrl, function(assignmentsPage) {
+            Debug.lg(" SUCCESS GETting assignments page :");
+            Debug.lg(assignmentsPage);
+
+        }, function(error){
+            Debug.lge(error);
+        });
+
+    }, function(error) {
+        Debug.lg(error);
+    })
 }
 
 // success takes HTML string with all courses resources as arg
 function getCourseResourcesPage(course, success) {
-
+    
 }
 
+
+//#region 
+// success takes returned html as arg
+function getPage(url, success, failure) {
+    $.ajax({
+        type : "GET",
+        url : url, 
+        success : function(data) {
+            success(data);
+        },
+        error : function(err) {
+            failure("post to login page failed : \n");
+            Debug.lge(err);
+            Debug.lge(err.responseText);
+        }
+    });
+}
+
+//#endregion
 module.exports.getAllCoursesList = getAllCoursesList;
-module.exports.getCourseAssignmentsPage = getCourseAssignmentsPage;
-module.exports.getCourseResourcesPage = getCourseResourcesPage;
+module.exports.getCourseAssignments = getCourseAssignments;
+// module.exports.getCourseResourcesPage = getCourseResourcesPage;
 
 

@@ -27284,7 +27284,7 @@ function savedPasswordValid(successCallback, errorCallback) {
 
 // success takes 0 arguments
 // failure takes error obj as argument
-function rewriteLoginPassWord(newLogin, newPassword) {
+function rewriteLoginPassWord(newLogin, newPassword, success, failure) {
 
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
@@ -27421,7 +27421,7 @@ function getLoginPassword(success, failure) {
 module.exports.rewriteLoginPassWord = rewriteLoginPassWord;
 module.exports.savedPasswordValid = savedPasswordValid;
 module.exports.getAuthPage = getAuthPage;
-},{"./Debug":331,"./ErrorCommenter":332,"./FileWriter":334}],328:[function(require,module,exports){
+},{"./Debug":331,"./ErrorCommenter":332,"./FileWriter":333}],328:[function(require,module,exports){
 // handles assignments storage, removal
 // and data requests
 
@@ -27476,10 +27476,10 @@ module.exports.resourcesDirName = resourcesDirName;
 },{"./Debug":331,"./ErrorCommenter":332}],329:[function(require,module,exports){
 //#region defs 
 var Debug = require("./Debug");
-var ErrorHandlers = require("./ErrorHandlers");
 var CourseClass = require('./data classes/CourseClass');
 var FileWriter = require('./FileWriter');
 var DisteduDownloader = require('./DIsteduDownloader');
+var ErrorCommenter = require('./ErrorCommenter');
 
 // [{id - number : course - str }]
 var idToCourse = [];
@@ -27541,15 +27541,21 @@ function saveUserCoursesTable() {
 }
 
 //#region helpres
-function rewriteCoursesTable(newCourses) {
+function rewriteCoursesTable(newCourses, failure) {
     window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
         
         cacheRootDir.getFile(coursesJsonName, {create : true}, function(file) {
             // write json
             FileWriter.writeObjToFile(file, newCourses);
         
-        }, ErrorHandlers.onErrorCreateFile(Debug.cacheRootPath + coursesJsonName));
-    }, ErrorHandlers.onErrorGetDir(Debug.cacheRootPath));
+        }, function(error) {
+            var commentedError = ErrorCommenter.addCommentPrefix(error, "Error getting file: " + Debug.cacheRootPath + coursesJsonName);
+            failure(error);
+        });
+    }, function(error) {
+        var commentedError = ErrorCommenter.addCommentPrefix(error, "Error getting dir: " + Debug.cacheRootPath);
+        failure(error);
+    });
 }
 
 // success takes ser courses as arg
@@ -27584,12 +27590,13 @@ function getSerializedCourses(success, failure) {
 
 module.exports.tryLoadSerializedCourses = tryLoadSerializedCourses;
 module.exports.saveUserCoursesTable = saveUserCoursesTable;
-},{"./DIsteduDownloader":330,"./Debug":331,"./ErrorHandlers":333,"./FileWriter":334,"./data classes/CourseClass":335}],330:[function(require,module,exports){
+},{"./DIsteduDownloader":330,"./Debug":331,"./ErrorCommenter":332,"./FileWriter":333,"./data classes/CourseClass":334}],330:[function(require,module,exports){
 //#region defs
 var AccountManager = require('./AccountManager');
 var Debug = require('./Debug');
 var cheerio = require('cheerio');
 var CourseClass = require('./data classes/CourseClass');
+
 
 // just add water(crossed out) id
 var assignmentsPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/index.php?id=";
@@ -27652,7 +27659,7 @@ function getAllCoursesList(success) {
 
 // success takes  courses assignments as arg
 // considers only corses whose deadline is later than filterDate
-function getCourseAssignments(courseId, success, filterDate) {
+function getCourseAssignments(courseId, success, failure, filterDate) {
     
     AccountManager.getAuthPage(function (loggedInPage){
 
@@ -27668,7 +27675,7 @@ function getCourseAssignments(courseId, success, filterDate) {
         });
 
     }, function(error) {
-        Debug.lg(error);
+        failure(error);
     })
 }
 
@@ -27702,7 +27709,7 @@ module.exports.getCourseAssignments = getCourseAssignments;
 
 
 
-},{"./AccountManager":327,"./Debug":331,"./data classes/CourseClass":335,"cheerio":5}],331:[function(require,module,exports){
+},{"./AccountManager":327,"./Debug":331,"./data classes/CourseClass":334,"cheerio":5}],331:[function(require,module,exports){
 // for testing, place them in root;
 function init() {
 
@@ -27780,41 +27787,6 @@ function addCommentPrefix(error, comment) {
 
 module.exports.addCommentPrefix = addCommentPrefix;
 },{}],333:[function(require,module,exports){
-// var Debug = require('./Debug');
-
-// function onLocalUrlError(URL) {
-//     return function(error) {
-//         Debug.lge(" error resolving URL: " + URL);
-//         Debug.lge("returned such error: " + error);
-//     }
-// }
-
-// function onErrorGetDir(newDirName) {
-//     return function(error) {
-//         Debug.lge('Error getting dir ' + newDirName + "\n" + error);
-//     }
-// }
-
-// function onErrorCreateFile(newFileName) {
-//     return function(error) {
-//         Debug.lge('Error creating  file ' + newFileName + "\n" + error);
-//     }
-// }
-
-// function onErrorReadFile(filename) {
-//     return function(error) {
-//         Debug.lge('Error reading  file ' + filename + "\n" + error);
-//     }
-// }
-
-// module.exports.onLocalUrlError = onLocalUrlError;
-// module.exports.onErrorGetDir = onErrorGetDir;
-// module.exports.onErrorCreateFile = onErrorCreateFile;
-// module.exports.onErrorReadFile = onErrorReadFile;
-
-
-
-},{}],334:[function(require,module,exports){
 var Debug = require('./Debug');
 var ErrorCommenter = require('./ErrorCommenter');
 
@@ -27851,7 +27823,7 @@ function writeObjToFile(file, obj, failure) {
 
 module.exports.write = write;
 module.exports.writeObjToFile = writeObjToFile;
-},{"./Debug":331,"./ErrorCommenter":332}],335:[function(require,module,exports){
+},{"./Debug":331,"./ErrorCommenter":332}],334:[function(require,module,exports){
 // var DisteduDownloader = require('../DisteduDownloader');
 // var CacheManager = require('../CacheManager');
 
@@ -27895,7 +27867,7 @@ module.exports.writeObjToFile = writeObjToFile;
 // }
 
 
-},{}],336:[function(require,module,exports){
+},{}],335:[function(require,module,exports){
 // #region require
 var AccountManager = require('./Backend/AccountManager');
 var CacheManager = require('./Backend/CacheManager');
@@ -27964,4 +27936,4 @@ $(function(){
 });
 module.exports.App = app;
 
-},{"./Backend/AccountManager":327,"./Backend/CacheManager":328,"./Backend/CourseManager":329,"./Backend/DIsteduDownloader":330,"./Backend/Debug":331}]},{},[336]);
+},{"./Backend/AccountManager":327,"./Backend/CacheManager":328,"./Backend/CourseManager":329,"./Backend/DIsteduDownloader":330,"./Backend/Debug":331}]},{},[335]);

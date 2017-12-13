@@ -4,6 +4,7 @@ var Debug = require('./Debug');
 var cheerio = require('cheerio');
 var CourseClass = require('./data classes/CourseClass');
 
+
 // just add water(crossed out) id
 var assignmentsPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/index.php?id=";
 var resourcesPageTemplate = "http://distedu.ukma.edu.ua/mod/resource/index.php?id=";
@@ -65,7 +66,7 @@ function getAllCoursesList(success) {
 
 // success takes  courses assignments as arg
 // considers only corses whose deadline is later than filterDate
-function getCourseAssignments(courseId, success, filterDate) {
+function getCourseAssignments(courseId, success, failure, filterDate) {
     
     AccountManager.getAuthPage(function (loggedInPage){
 
@@ -81,7 +82,7 @@ function getCourseAssignments(courseId, success, filterDate) {
         });
 
     }, function(error) {
-        Debug.lg(error);
+        failure(error);
     })
 }
 

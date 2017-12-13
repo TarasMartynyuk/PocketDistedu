@@ -35,7 +35,7 @@ function savedPasswordValid(successCallback, errorCallback) {
 
 // success takes 0 arguments
 // failure takes error obj as argument
-function rewriteLoginPassWord(newLogin, newPassword) {
+function rewriteLoginPassWord(newLogin, newPassword, success, failure) {
 
         window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){

@@ -1,9 +1,9 @@
 //#region defs 
 var Debug = require("./Debug");
-var ErrorHandlers = require("./ErrorHandlers");
 var CourseClass = require('./data classes/CourseClass');
 var FileWriter = require('./FileWriter');
 var DisteduDownloader = require('./DIsteduDownloader');
+var ErrorCommenter = require('./ErrorCommenter');
 
 // [{id - number : course - str }]
 var idToCourse = [];
@@ -65,15 +65,21 @@ function saveUserCoursesTable() {
 }
 
 //#region helpres
-function rewriteCoursesTable(newCourses) {
+function rewriteCoursesTable(newCourses, failure) {
     window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
         
         cacheRootDir.getFile(coursesJsonName, {create : true}, function(file) {
             // write json
             FileWriter.writeObjToFile(file, newCourses);
         
-        }, ErrorHandlers.onErrorCreateFile(Debug.cacheRootPath + coursesJsonName));
-    }, ErrorHandlers.onErrorGetDir(Debug.cacheRootPath));
+        }, function(error) {
+            var commentedError = ErrorCommenter.addCommentPrefix(error, "Error getting file: " + Debug.cacheRootPath + coursesJsonName);
+            failure(error);
+        });
+    }, function(error) {
+        var commentedError = ErrorCommenter.addCommentPrefix(error, "Error getting dir: " + Debug.cacheRootPath);
+        failure(error);
+    });
 }
 
 // success takes ser courses as arg

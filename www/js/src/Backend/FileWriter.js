@@ -2,7 +2,7 @@ var Debug = require('./Debug');
 var ErrorCommenter = require('./ErrorCommenter');
 
 // dataObj type is Blob
-function write(fileEntry, dataObj, failure) {
+function write(fileEntry, dataObj, success, failure) {
     // Create a FileWriter object for our FileEntry (log.txt).
 
     Debug.lg("dataobj " + dataObj);
@@ -14,6 +14,7 @@ function write(fileEntry, dataObj, failure) {
         fileWriter.onwriteend = function() {
             Debug.lg("Successful file write : " + fileEntry);
             Debug.lg(dataObj);
+            success();
         };
 
         fileWriter.onerror = function (e) {

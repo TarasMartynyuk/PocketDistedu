@@ -41,7 +41,7 @@ function rewriteLoginPassWord(newLogin, newPassword, success, failure) {
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
                 Debug.lg("created : " + file.toURL());
                 
-                FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]));
+                FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]), success, failure);
                 
             }, function(error) {
                 var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
@@ -170,5 +170,7 @@ function getLoginPassword(success, failure) {
 //#endregion
 
 module.exports.rewriteLoginPassWord = rewriteLoginPassWord;
-module.exports.savedPasswordValid = savedPasswordValid;
+module.exports.pass = rewriteLoginPassWord;
+
+module.exports.passwordValid = passwordValid;
 module.exports.getAuthPage = getAuthPage;

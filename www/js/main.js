@@ -27290,7 +27290,7 @@ function rewriteLoginPassWord(newLogin, newPassword, success, failure) {
             cacheRootDir.getFile(loginPassWordFileName, {create : true}, function (file){
                 Debug.lg("created : " + file.toURL());
                 
-                FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]));
+                FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]), success, failure);
                 
             }, function(error) {
                 var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
@@ -27791,7 +27791,7 @@ var Debug = require('./Debug');
 var ErrorCommenter = require('./ErrorCommenter');
 
 // dataObj type is Blob
-function write(fileEntry, dataObj, failure) {
+function write(fileEntry, dataObj, success, failure) {
     // Create a FileWriter object for our FileEntry (log.txt).
 
     Debug.lg("dataobj " + dataObj);
@@ -27803,6 +27803,7 @@ function write(fileEntry, dataObj, failure) {
         fileWriter.onwriteend = function() {
             Debug.lg("Successful file write : " + fileEntry);
             Debug.lg(dataObj);
+            success();
         };
 
         fileWriter.onerror = function (e) {

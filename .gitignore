@@ -1,8 +1,11 @@
 #NODE
 node_modules/
 
+
 #CORDOVA
 platforms/
 plugins/
 
 .vscode/
+
+www/js/main.js

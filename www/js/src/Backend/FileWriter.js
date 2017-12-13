@@ -12,8 +12,6 @@ function write(fileEntry, dataObj, success, failure) {
     fileEntry.createWriter(function (fileWriter) {
 
         fileWriter.onwriteend = function() {
-            Debug.lg("Successful file write : " + fileEntry);
-            Debug.lg(dataObj);
             success();
         };
 

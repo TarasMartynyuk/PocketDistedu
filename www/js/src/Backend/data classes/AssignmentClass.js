@@ -1,13 +1,15 @@
 var CacheManager = require('../CacheManager');
 
-// name : string, deadline : string
+// name : string, 
+// deadline : Data object (JS)
 // assignmentDatapath - global path to the directory where task and resources are stored
 function Assignment(name, deadline) {
     this.name = name,
     this.deadline = deadline,
 
-    this.AssignmentDataPath = null;
+    
     this.cached = false;
+    this.AssignmentDataPath = null;
 }
 
 Assignment.prototype = {
@@ -20,7 +22,8 @@ Assignment.prototype = {
     }
 }
 
-// name : string, deadline : string
+// name : string, 
+// deadline : Data object (JS)
 // assignmentDescription : string - html file
 // resources : [ url, url... ] - pdf or doc(mostly))
 function AssignmentData(assignment, onInitEnd) {
@@ -29,3 +32,6 @@ function AssignmentData(assignment, onInitEnd) {
     // get string from file
     
 }
+
+module.exports.Assignment = Assignment;
+module.exports.AssignmentData = AssignmentData;

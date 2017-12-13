@@ -4,6 +4,7 @@ var FileWriter = require('./FileWriter');
 var ErrorCommenter = require('./ErrorCommenter');
 
 var loginPassWordFileName = "loginCredentials.txt";
+
 var logPasBackupName = "loginCredentialsBACKUP.txt";
 var loginURL = "http://distedu.ukma.edu.ua/login/index.php";
 var savedLogin;
@@ -13,7 +14,7 @@ var savedPassword;
 // loads login and password to memory
 // successCallback recieves {login, password} as argument
 // errorCallback will recieve a string
-function savedPasswordValid(successCallback, errorCallback) {
+function savedPasswordValid(success, failure) {
     // first check if file exists
     // Debug.lg("SAVED PASSWORD VALID FUNC");
     
@@ -26,10 +27,10 @@ function savedPasswordValid(successCallback, errorCallback) {
         passwordValid({
             login : savedLogin,
             password : savedPassword
-        }, successCallback, errorCallback);
+        }, success, failure);
 
     }, function(error) {
-      errorCallback(error);
+      failure(error);
     });
 }
 
@@ -103,9 +104,7 @@ function tryAuthenticate(logPas, success, failure) {
             success(data);
         },
         error : function(error) {
-            error(" : \n");
-            Debug.lge("Server Error .responseText : " + err.responseText);
-
+            Debug.lge("Server Error .responseText : " + error.responseText);
             var commentedError = ErrorCommenter.addCommentPrefix(error, 'post to login page failed - ' + loginURL);
             failure(commentedError);
         }
@@ -121,10 +120,6 @@ function tryGetLogPassFile(success, failure){
                 success(file);
             }, function(error) {
                 var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
-                Debug.lg("getlogpas : " + error);
-                Debug.lg("getlogpas message: " + error.message);
-                
-        
                 failure(commentedError);
             } );
 
@@ -170,7 +165,6 @@ function getLoginPassword(success, failure) {
 //#endregion
 
 module.exports.rewriteLoginPassWord = rewriteLoginPassWord;
-module.exports.pass = rewriteLoginPassWord;
-
+module.exports.savedPasswordValid = savedPasswordValid;
 module.exports.passwordValid = passwordValid;
 module.exports.getAuthPage = getAuthPage;

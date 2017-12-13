@@ -1,9 +1,9 @@
 //#region defs
 var Debug = require('./Debug');
-var ErrorHandlers = require('./ErrorHandlers');
 var FileWriter = require('./FileWriter');
+var ErrorCommenter = require('./ErrorCommenter');
 
-var loginPassWordFileName = "loginCredentials.txt" + "dasdsad";
+var loginPassWordFileName = "loginCredentials.txt";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
 var loginURL = "http://distedu.ukma.edu.ua/login/index.php";
 var savedLogin;
@@ -44,11 +44,11 @@ function rewriteLoginPassWord(newLogin, newPassword) {
                 FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]));
                 
             }, function(error) {
-                var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
+                var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
                 failure(commentedError);
             });
         }, function(error) {
-            var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+            var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
             failure(commentedError);
         });
 }
@@ -106,7 +106,7 @@ function tryAuthenticate(logPas, success, failure) {
             error(" : \n");
             Debug.lge("Server Error .responseText : " + err.responseText);
 
-            var commentedError = addCommentPrefix(error, 'post to login page failed - ' + loginURL);
+            var commentedError = ErrorCommenter.addCommentPrefix(error, 'post to login page failed - ' + loginURL);
             failure(commentedError);
         }
     });
@@ -115,24 +115,23 @@ function tryAuthenticate(logPas, success, failure) {
 // success recieves file as argument
 function tryGetLogPassFile(success, failure){
     
-        failure = failure || ErrorHandlers.onLocalUrlError(Debug.cacheRootPath + loginPassWordFileName);
-            window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
-                
-                cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
-                    success(file);
-                }, function(error) {
-                    var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
-                    Debug.lg("getlogpas : " + error);
-                    Debug.lg("getlogpas message: " + error.message);
-                    
+        window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             
-                    failure(commentedError);
-                } );
-    
+            cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
+                success(file);
             }, function(error) {
-                var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+                var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
+                Debug.lg("getlogpas : " + error);
+                Debug.lg("getlogpas message: " + error.message);
+                
+        
                 failure(commentedError);
-            });
+            } );
+
+        }, function(error) {
+            var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+            failure(commentedError);
+        });
     }
 // success takes 0 arguments
 
@@ -156,23 +155,18 @@ function getLoginPassword(success, failure) {
             };
             reader.readAsText(file);
         }, function(error) {
-            var commentedError = addCommentPrefix(error, 'Error reading  file ' + filename);
+            var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error reading  file ' + filename);
             failure(commentedError);
         });
 
     }, function(error) {
-        var commentedError = addCommentPrefix(error, "login-password file does not exist yet -");
+        var commentedError = ErrorCommenter.addCommentPrefix(error, "login-password file does not exist yet -");
         failure(commentedError);
     });
 }
 
 // returnnes new erorr obj, whose message will have comment appended at start
-function addCommentPrefix(error, comment) {
-    // error.message = ;
-    // var commentedError = ;
-    // Debug.lg("var commentedError = addCommentPrefix message: " + commentedError.message);
-    return new Error(comment + " , threw such error:\n" + error.message);
-}
+
 //#endregion
 
 module.exports.rewriteLoginPassWord = rewriteLoginPassWord;

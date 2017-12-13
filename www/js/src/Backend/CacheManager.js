@@ -3,7 +3,7 @@
 
 //#region path vars
 var Debug = require('./Debug');
-var ErrorHandlers = require('./ErrorHandlers');
+var ErrorCommenter = require('./ErrorCommenter');
 
 // root for all asignments directories - emplty when week is not cached
 var weekDirName = "Week";
@@ -21,11 +21,14 @@ function deleteAssignmentData(assignment) {
 }
 
 // onCreatedCallback recieves created dir as argument
-function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
+function createDirectory(rootDirEntry, newDirName, onCreatedCallback, failure) {
     onCreatedCallback = onCreatedCallback || function(dirEntry) {
         Debug.lg('created dir ' + dirEntry.toURL());
     };
-    rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, ErrorHandlers.onErrorGetDir(newDirName));
+    rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, function(error){
+        commentedError = ErrorCommenter.addCommentPrefix(error, "Error creating dir : " + rootDirEntry + newDirName);
+        newDirName(error);
+    });
 }
 //#endregion
 

@@ -1,6 +1,8 @@
 var Debug = require('./Debug');
+var ErrorCommenter = require('./ErrorCommenter');
+
 // dataObj type is Blob
-function write(fileEntry, dataObj) {
+function write(fileEntry, dataObj, failure) {
     // Create a FileWriter object for our FileEntry (log.txt).
 
     Debug.lg("dataobj " + dataObj);
@@ -20,14 +22,14 @@ function write(fileEntry, dataObj) {
 
         fileWriter.write(dataObj);
     }, function(error) {
-        Debug.lge('could not create writer for file: ' + fileEntry);
-        Debug.lge('returned such error : ' + error);
+        commentedError = ErrorCommenter.addCommentPrefix(error, "Error creating writer for " + fileEntry);
+        failure(commentedError);
     });
 }
 
-function writeObjToFile(file, obj) {
+function writeObjToFile(file, obj, failure) {
     Debug.lg("JSONNED obj : " + JSON.stringify(obj));
-    write(file, new Blob([JSON.stringify(obj)]));
+    write(file, new Blob([JSON.stringify(obj)]), failure);
 }
 
 module.exports.write = write;

@@ -27249,10 +27249,10 @@ function hasOwnProperty(obj, prop) {
 },{"./support/isBuffer":325,"_process":306,"inherits":324}],327:[function(require,module,exports){
 //#region defs
 var Debug = require('./Debug');
-var ErrorHandlers = require('./ErrorHandlers');
 var FileWriter = require('./FileWriter');
+var ErrorCommenter = require('./ErrorCommenter');
 
-var loginPassWordFileName = "loginCredentials.txt" + "dasdsad";
+var loginPassWordFileName = "loginCredentials.txt";
 var logPasBackupName = "loginCredentialsBACKUP.txt";
 var loginURL = "http://distedu.ukma.edu.ua/login/index.php";
 var savedLogin;
@@ -27293,11 +27293,11 @@ function rewriteLoginPassWord(newLogin, newPassword) {
                 FileWriter.write(file, new Blob([newLogin + "\n" + newPassword]));
                 
             }, function(error) {
-                var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
+                var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
                 failure(commentedError);
             });
         }, function(error) {
-            var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+            var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
             failure(commentedError);
         });
 }
@@ -27355,7 +27355,7 @@ function tryAuthenticate(logPas, success, failure) {
             error(" : \n");
             Debug.lge("Server Error .responseText : " + err.responseText);
 
-            var commentedError = addCommentPrefix(error, 'post to login page failed - ' + loginURL);
+            var commentedError = ErrorCommenter.addCommentPrefix(error, 'post to login page failed - ' + loginURL);
             failure(commentedError);
         }
     });
@@ -27364,24 +27364,23 @@ function tryAuthenticate(logPas, success, failure) {
 // success recieves file as argument
 function tryGetLogPassFile(success, failure){
     
-        failure = failure || ErrorHandlers.onLocalUrlError(Debug.cacheRootPath + loginPassWordFileName);
-            window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
-                
-                cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
-                    success(file);
-                }, function(error) {
-                    var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
-                    Debug.lg("getlogpas : " + error);
-                    Debug.lg("getlogpas message: " + error.message);
-                    
+        window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
             
-                    failure(commentedError);
-                } );
-    
+            cacheRootDir.getFile(loginPassWordFileName, {create : false}, function(file){
+                success(file);
             }, function(error) {
-                var commentedError = addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+                var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath + loginPassWordFileName);
+                Debug.lg("getlogpas : " + error);
+                Debug.lg("getlogpas message: " + error.message);
+                
+        
                 failure(commentedError);
-            });
+            } );
+
+        }, function(error) {
+            var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error resolving URL : ' + Debug.cacheRootPath);
+            failure(commentedError);
+        });
     }
 // success takes 0 arguments
 
@@ -27405,35 +27404,30 @@ function getLoginPassword(success, failure) {
             };
             reader.readAsText(file);
         }, function(error) {
-            var commentedError = addCommentPrefix(error, 'Error reading  file ' + filename);
+            var commentedError = ErrorCommenter.addCommentPrefix(error, 'Error reading  file ' + filename);
             failure(commentedError);
         });
 
     }, function(error) {
-        var commentedError = addCommentPrefix(error, "login-password file does not exist yet -");
+        var commentedError = ErrorCommenter.addCommentPrefix(error, "login-password file does not exist yet -");
         failure(commentedError);
     });
 }
 
 // returnnes new erorr obj, whose message will have comment appended at start
-function addCommentPrefix(error, comment) {
-    // error.message = ;
-    // var commentedError = ;
-    // Debug.lg("var commentedError = addCommentPrefix message: " + commentedError.message);
-    return new Error(comment + " , threw such error:\n" + error.message);
-}
+
 //#endregion
 
 module.exports.rewriteLoginPassWord = rewriteLoginPassWord;
 module.exports.savedPasswordValid = savedPasswordValid;
 module.exports.getAuthPage = getAuthPage;
-},{"./Debug":331,"./ErrorHandlers":332,"./FileWriter":333}],328:[function(require,module,exports){
+},{"./Debug":331,"./ErrorCommenter":332,"./FileWriter":334}],328:[function(require,module,exports){
 // handles assignments storage, removal
 // and data requests
 
 //#region path vars
 var Debug = require('./Debug');
-var ErrorHandlers = require('./ErrorHandlers');
+var ErrorCommenter = require('./ErrorCommenter');
 
 // root for all asignments directories - emplty when week is not cached
 var weekDirName = "Week";
@@ -27451,11 +27445,14 @@ function deleteAssignmentData(assignment) {
 }
 
 // onCreatedCallback recieves created dir as argument
-function createDirectory(rootDirEntry, newDirName, onCreatedCallback) {
+function createDirectory(rootDirEntry, newDirName, onCreatedCallback, failure) {
     onCreatedCallback = onCreatedCallback || function(dirEntry) {
         Debug.lg('created dir ' + dirEntry.toURL());
     };
-    rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, ErrorHandlers.onErrorGetDir(newDirName));
+    rootDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, function(error){
+        commentedError = ErrorCommenter.addCommentPrefix(error, "Error creating dir : " + rootDirEntry + newDirName);
+        newDirName(error);
+    });
 }
 //#endregion
 
@@ -27476,7 +27473,7 @@ module.exports.resourcesDirName = resourcesDirName;
 
 
 
-},{"./Debug":331,"./ErrorHandlers":332}],329:[function(require,module,exports){
+},{"./Debug":331,"./ErrorCommenter":332}],329:[function(require,module,exports){
 //#region defs 
 var Debug = require("./Debug");
 var ErrorHandlers = require("./ErrorHandlers");
@@ -27587,7 +27584,7 @@ function getSerializedCourses(success, failure) {
 
 module.exports.tryLoadSerializedCourses = tryLoadSerializedCourses;
 module.exports.saveUserCoursesTable = saveUserCoursesTable;
-},{"./DIsteduDownloader":330,"./Debug":331,"./ErrorHandlers":332,"./FileWriter":333,"./data classes/CourseClass":334}],330:[function(require,module,exports){
+},{"./DIsteduDownloader":330,"./Debug":331,"./ErrorHandlers":333,"./FileWriter":334,"./data classes/CourseClass":335}],330:[function(require,module,exports){
 //#region defs
 var AccountManager = require('./AccountManager');
 var Debug = require('./Debug');
@@ -27705,7 +27702,7 @@ module.exports.getCourseAssignments = getCourseAssignments;
 
 
 
-},{"./AccountManager":327,"./Debug":331,"./data classes/CourseClass":334,"cheerio":5}],331:[function(require,module,exports){
+},{"./AccountManager":327,"./Debug":331,"./data classes/CourseClass":335,"cheerio":5}],331:[function(require,module,exports){
 // for testing, place them in root;
 function init() {
 
@@ -27777,6 +27774,12 @@ module.exports.init = init;
 
 
 },{}],332:[function(require,module,exports){
+function addCommentPrefix(error, comment) {
+    return new Error(comment + " , threw such error:\n" + error.message);
+}
+
+module.exports.addCommentPrefix = addCommentPrefix;
+},{}],333:[function(require,module,exports){
 // var Debug = require('./Debug');
 
 // function onLocalUrlError(URL) {
@@ -27811,10 +27814,12 @@ module.exports.init = init;
 
 
 
-},{}],333:[function(require,module,exports){
+},{}],334:[function(require,module,exports){
 var Debug = require('./Debug');
+var ErrorCommenter = require('./ErrorCommenter');
+
 // dataObj type is Blob
-function write(fileEntry, dataObj) {
+function write(fileEntry, dataObj, failure) {
     // Create a FileWriter object for our FileEntry (log.txt).
 
     Debug.lg("dataobj " + dataObj);
@@ -27834,19 +27839,19 @@ function write(fileEntry, dataObj) {
 
         fileWriter.write(dataObj);
     }, function(error) {
-        Debug.lge('could not create writer for file: ' + fileEntry);
-        Debug.lge('returned such error : ' + error);
+        commentedError = ErrorCommenter.addCommentPrefix(error, "Error creating writer for " + fileEntry);
+        failure(commentedError);
     });
 }
 
-function writeObjToFile(file, obj) {
+function writeObjToFile(file, obj, failure) {
     Debug.lg("JSONNED obj : " + JSON.stringify(obj));
-    write(file, new Blob([JSON.stringify(obj)]));
+    write(file, new Blob([JSON.stringify(obj)]), failure);
 }
 
 module.exports.write = write;
 module.exports.writeObjToFile = writeObjToFile;
-},{"./Debug":331}],334:[function(require,module,exports){
+},{"./Debug":331,"./ErrorCommenter":332}],335:[function(require,module,exports){
 // var DisteduDownloader = require('../DisteduDownloader');
 // var CacheManager = require('../CacheManager');
 
@@ -27890,7 +27895,7 @@ module.exports.writeObjToFile = writeObjToFile;
 // }
 
 
-},{}],335:[function(require,module,exports){
+},{}],336:[function(require,module,exports){
 // #region require
 var AccountManager = require('./Backend/AccountManager');
 var CacheManager = require('./Backend/CacheManager');
@@ -27959,4 +27964,4 @@ $(function(){
 });
 module.exports.App = app;
 
-},{"./Backend/AccountManager":327,"./Backend/CacheManager":328,"./Backend/CourseManager":329,"./Backend/DIsteduDownloader":330,"./Backend/Debug":331}]},{},[335]);
+},{"./Backend/AccountManager":327,"./Backend/CacheManager":328,"./Backend/CourseManager":329,"./Backend/DIsteduDownloader":330,"./Backend/Debug":331}]},{},[336]);

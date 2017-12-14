@@ -16,6 +16,7 @@ var DeadlineVCH = require('./Backend/DeadlineValidityChecker');
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
+    
 
     onDeviceReady: function() {
         Debug.init();
@@ -36,25 +37,34 @@ var DeadlineVCH = require('./Backend/DeadlineValidityChecker');
 
         });
 
+        //TODO: remove later!
+        var filteredCourses = [
+            { id : 189, 
+                course : "JavaScript" 
+            },
+            { id : 131, 
+                course : "Основи комп'ютерних алгоритмів на Java" 
+            }
+        ];
         $('#test-file').click(function () {
             AccountManager.savedPasswordValid(function(logPas) {
                 // Debug.lg(logPas.login);
                 // Debug.lg(logPas.password);
-                // AssignmentManager.tryLoadSerializedCourses(function () {
-                //     Debug.lg("COURSES DESERIALIZED");
-                // }, function(error) {
-                //     Debug.lge("COURSES NOT FOUND : ");
-                //     Debug.lge(error);
-                //     // filter all available user's courses
-                //     // DisteduDownloader.getAllCoursesList(function(allCourses) {
-                //     //     Debug.lg(allCourses);
-                //     // });
-                // });
-                // AssignmentManager.saveUserCoursesTable();
-                DisteduDownloader.getCourseAssignments(131, function(){
-                }, function(error){
-                    Debug.lg(error);
+                AssignmentManager.tryLoadSerializedCourses(function () {
+                    Debug.lg("COURSES DESERIALIZED");
+                }, function(error) {
+                    console.clear();
+                    Debug.lge("COURSES NOT FOUND : ");
+                    // Debug.lge(error);
+                    // filter all available user's courses
+                    AssignmentManager.saveUserAssignmentsArr(filteredCourses, function() {
+
+                    }, function(error){
+                        Debug.lg(error);
+                    });
                 });
+                // AssignmentManager.saveUserCoursesTable();
+                
             }, function(error) {
                 Debug.lge(error);
                 // Debug.lge("message" + error.message);

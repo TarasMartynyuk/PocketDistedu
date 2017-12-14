@@ -26,7 +26,7 @@ function write(fileEntry, dataObj, success, failure) {
     });
 }
 
-function writeObjToFile(file, obj, failure) {
+function writeObjToFile(file, obj, success, failure) {
     Debug.lg("JSONNED obj : " + JSON.stringify(obj));
     write(file, new Blob([JSON.stringify(obj)]), failure);
 }

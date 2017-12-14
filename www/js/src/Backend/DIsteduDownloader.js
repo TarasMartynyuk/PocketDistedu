@@ -15,7 +15,7 @@ var assignmentPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/";
 
 // success takes list of all courses of user (using his data from AccountManager) as argument, 
 // in format [{id, course}]
-function getAllCoursesList(success) {
+function getAllCoursesList(success, failure) {
     // first, get the after-login page
     AccountManager.getAuthPage( function(afterLoginPage){
 
@@ -48,76 +48,73 @@ function getAllCoursesList(success) {
                 });
                 success(allCourses);
             },
-            error : function(err) {
-                Debug.lge("GET  : \n");
-                Debug.lge(err);
+            error : function(error) {
+                failure(ErrorCommenter.addCommentPrefix(error, "GET  : \n"));
             }
         });
 
-        // Debug.lg(cher(div).children);
-        
-        // .children('a')
-        
     }, function(error){
-        Debug.lge("error AUTH");
-        Debug.lge(error);
+        failure(error);
     });
 }
 
-// success takes  courses assignments as arg
-// considers only corses whose deadline is later than filterDate
-function getCourseAssignments(courseId, success, failure, filterDate) {
+// returnes a promise, whose resolve takes courses assignments as arg
+function getCourseAssignments(courseId) {
     
-    AccountManager.getAuthPage(function (loggedInPage) {
+    return new Promise(function(resolve, reject){
 
-        var assignmentsPageUrl = allAssignmentsPageTemplate + courseId;
-        // Debug.lg("fetching asses for from assignments page : " + assignmentsPageUrl);
-        
-        getPage(assignmentsPageUrl, function(assignmentsPage) {
-
-            Debug.lg(" SUCCESS GETting assignments page :");
-
-            var cher = new cheerio.load(assignmentsPage);
-            Debug.lg(cher('title').text());
-
-            var tableRows = cher('.generaltable.boxaligncenter').children('tbody')
-                .children('tr');
-            tableRows = tableRows.slice(1, tableRows.length);   // first one is header row
+        AccountManager.getAuthPage(function (loggedInPage) {
             
-            console.clear();
-            var courseAssignments = [];
-
-            var weekNumber;
-            for(var i = 0; i < tableRows.length; i++) {
-                // check if it is table divider
-                var cheeredRow = cheerio.load(tableRows[i]);
-                if(cheeredRow('[colspan="6"]').length > 0) {
-                    // Debug.lg("\nnumber " + i + " is a divider row");
-                    continue;
-                }
-                // check if row defines new week
-                var weekNumberStr = cheeredRow('td.cell.c0').text();
-                // Debug.lg(weekNumberStr);
-
-                // change weekNumber only if first cell is not blank
-                if(weekNumberStr != '') {
-                    weekNumber = Number(weekNumberStr);
-                }
-                // construct assignment and add it to week's array
-                var assignment = getAssignmentFromRow(cheeredRow, weekNumber);
-                if(assignment != null) {
-                    courseAssignments.push(assignment);
-                }
-            }
-            // Debug.lg(courseAssignments);
-            success(courseAssignments);
-        }, function(error){
-            failure(error);
-        });
-
-    }, function(error) {
-        failure(error);
-    })
+                    var assignmentsPageUrl = allAssignmentsPageTemplate + courseId;
+                    // Debug.lg("fetching asses for from assignments page : " + assignmentsPageUrl);
+                    
+                    getPage(assignmentsPageUrl, function(assignmentsPage) {
+            
+                        Debug.lg(" SUCCESS GETting assignments page :");
+            
+                        var cher = new cheerio.load(assignmentsPage);
+                        Debug.lg(cher('title').text());
+            
+                        var tableRows = cher('.generaltable.boxaligncenter').children('tbody')
+                            .children('tr');
+                        tableRows = tableRows.slice(1, tableRows.length);   // first one is header row
+                        
+                        // console.clear();
+                        var courseAssignments = [];
+            
+                        var weekNumber;
+                        for(var i = 0; i < tableRows.length; i++) {
+                            // check if it is table divider
+                            var cheeredRow = cheerio.load(tableRows[i]);
+                            if(cheeredRow('[colspan="6"]').length > 0) {
+                                // Debug.lg("\nnumber " + i + " is a divider row");
+                                continue;
+                            }
+                            // check if row defines new week
+                            var weekNumberStr = cheeredRow('td.cell.c0').text();
+                            // Debug.lg(weekNumberStr);
+            
+                            // change weekNumber only if first cell is not blank
+                            if(weekNumberStr != '') {
+                                weekNumber = Number(weekNumberStr);
+                            }
+                            // construct assignment and add it to week's array
+                            var assignment = getAssignmentFromRow(cheeredRow, weekNumber, courseId);
+                            if(assignment != null) {
+                                courseAssignments.push(assignment);
+                            }
+                        }
+                        // Debug.lg(courseAssignments);
+                        resolve(courseAssignments);
+                    }, function(error){
+                        reject(error);
+                    });
+            
+                }, function(error) {
+                    reject(error);
+                })
+    });
+    
 }
 
 // success takes HTML string with all courses resources as arg
@@ -145,7 +142,7 @@ function getPage(url, success, failure) {
 // takes a cheerio node of assignment row in tasks page
 // returns assignment obj if deadline has not yet passed
 // or null 
-function getAssignmentFromRow(cheeredRow, week) {
+function getAssignmentFromRow(cheeredRow, week, courseId) {
     var hrefNodeSelector = 'td.cell.c1';
     var deadlineNodeSelector = 'td.cell.c3';
 
@@ -167,7 +164,7 @@ function getAssignmentFromRow(cheeredRow, week) {
     var diff = DeadlineValidityChecker.deadlineStatus(deadlineDate);
     // Debug.lg("diff : " + diff);
     return diff >= 0 ?
-        new AssignmentClass.Assignment(name, deadlineDate, week) :
+        new AssignmentClass.Assignment(name, deadlineDate, week, courseId) :
         null;
 }
 

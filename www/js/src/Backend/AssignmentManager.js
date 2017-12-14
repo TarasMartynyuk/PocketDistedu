@@ -3,23 +3,13 @@ var Debug = require("./Debug");
 var FileWriter = require('./FileWriter');
 var DisteduDownloader = require('./DIsteduDownloader');
 var ErrorCommenter = require('./ErrorCommenter');
+var Promise = require('bluebird');
 
 // [{id - number : course - str }]
 var idToCourse = [];
-// courseId- assignment
-// use Object.keys to iterate
-var idToAssignmentArr = [];
+var assignmentArr = [];
 // var userCourses = [];
 var coursesJsonName = "userCourses.json";
-
-var filteredCourses = [
-    { id : 189, 
-        course : "JavaScript" 
-    },
-    { id : 131, 
-        course : "Основи комп'ютерних алгоритмів на Java" 
-    }
-];
 
 //#endregion
 
@@ -41,33 +31,39 @@ function update() {
 
 }
 
-// pass user - filtered array of {id, course} as arg,
+// pass user - filtered array of {id, courseName(str)} as arg,
 // serializes it to be able to use in next sessions
 // also loads to userCourses variable
-// DOES NOT cache assignments
-function saveUserCoursesTable() {
+// DOES NOT cache assignments resources and descriptions
+function saveUserAssignmentsArr(filteredCourses, success, failure) {
    
     // var currDate = 
-
+    assignmentsPromises = [];
+    
     for(var i = 0; i < filteredCourses.length; i++) {
         // use course id to get all future assignments and construct idToAssignmentArr
-        DisteduDownloader.getCourseAssignments(filteredCourses[i].id, function(futureAssignments){
-
-        }, function (error){
-            
-        });
+        assignmentsPromises.push(DisteduDownloader.getCourseAssignments(filteredCourses[i].id));
     }
 
-    rewriteCoursesTable(filteredCourses);
+    Promise.all(assignmentsPromises).then(function(futureAssignments) {
+        success();
+        Debug.lg("SUCCESS constructing future assignments arr from web");
+        Debug.lg(futureAssignments);
+        // and cache them instantly
+        
+    }).catch(function(error){
+        failure(ErrorCommenter.addCommentPrefix(error, "Error constructing futureAssignments from web pages"));
+    })
+    
 }
 
 //#region helpres
-function rewriteCoursesTable(newCourses, failure) {
+function reserializeAssignmentsArray(newCourses, success, failure) {
     window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
         
         cacheRootDir.getFile(coursesJsonName, {create : true}, function(file) {
             // write json
-            FileWriter.writeObjToFile(file, newCourses);
+            FileWriter.writeObjToFile(file, newCourses, success, failure);
         
         }, function(error) {
             var commentedError = ErrorCommenter.addCommentPrefix(error, "Error getting file: " + Debug.cacheRootPath + coursesJsonName);
@@ -110,4 +106,4 @@ function getSerializedCourses(success, failure) {
 //#endregion
 
 module.exports.tryLoadSerializedCourses = tryLoadSerializedCourses;
-module.exports.saveUserCoursesTable = saveUserCoursesTable;
+module.exports.saveUserAssignmentsArr = saveUserAssignmentsArr;

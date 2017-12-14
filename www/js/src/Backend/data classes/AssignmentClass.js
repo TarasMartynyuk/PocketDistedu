@@ -15,6 +15,7 @@ function Assignment (name, deadline, week, courseId) {
         this.courseId = courseId
         this.cached = false;
         this.AssignmentDataPath = null; // null if not cached
+        this.completed = false;
     }
 
 Assignment.prototype = {

@@ -9,17 +9,25 @@ var AssignmentClass = require('./data classes/AssignmentClass');
 
 var assignmentsJsonName = "userAssignments.json";
 
+// {id : {name : assignment}}
+var loadedAssignmentsTable = {};
 //#endregion
 
-// success takes serialized assignments as args, 
+// if success loads serialized assignments into memory
 // is run when userCourses where successfully retrieved from disk
 // failure takes string representing error
-function tryGetSerializedAssignments(success, failure) {
+function tryLoadSerializedAssignments(success, failure) {
     getSerializedAssignments(function(serAssignments) {
-        // Debug.lg("loaded : ");
-        // Debug.lg(serAssignments);
+        for(var i = 0; i < serAssignments.length; i++) {
+            if(loadedAssignmentsTable[serAssignments[i].courseId] == undefined) {
+                loadedAssignmentsTable[serAssignments[i].courseId] = {};
+            }
+            loadedAssignmentsTable[serAssignments[i].courseId] [serAssignments[i].name] = serAssignments[i];
+        }
+        Debug.lg("loaded : ");
+        Debug.lg(loadedAssignmentsTable);
 
-        success(serAssignments);
+        success();
     }, function(error) {
         failure(error);
     });
@@ -83,16 +91,12 @@ function update(assignmentArr, success, failure) {
         Debug.lge(error);
     });
 
-    //TODO: re-serialize the array with passed assignments missing!
-    
-
-
+    //TODO: re-serialize the array with outdated assignments missing!
 }
 
 // pass user - filtered array of {id, courseName(str)} as arg,
-// serializes it to be able to use in next sessions
+// serializes its assignments to be able to use in next sessions
 // DOES NOT cache assignments resources and descriptions
-// success takes serialized courses as arg
 function saveUserAssignmentsArr(filteredCourses, success, failure) {
    
     assignmentsPromises = [];
@@ -117,9 +121,7 @@ function saveUserAssignmentsArr(filteredCourses, success, failure) {
             }
         }
 
-        reserializeAssignmentsArray(futureAssignments1D, function(){
-            success(futureAssignments1D);
-        }, failure);
+        reserializeAssignmentsArray(futureAssignments1D, success, failure);
         
     }).catch(function(error){
         failure(ErrorCommenter.addCommentPrefix(error, "Error constructing futureAssignments from web pages"));
@@ -127,13 +129,41 @@ function saveUserAssignmentsArr(filteredCourses, success, failure) {
     
 }
 
+// serializes current contents of loadedAssignments var
+function serializeAssignmentsFromMemory(success, failure) {
+    var assignmentsToSer = [];
+    var ids = Object.keys(loadedAssignmentsTable);
+    for(var i = 0; i < ids.length; i++) {
+        var IdsAssignments = Object.values(loadedAssignmentsTable[ids[i]]);
+        // Debug.lg(loadedAssignmentsTable[ids[i]]);
+        // Debug.lg(IdsAssignments);
+
+        for(var j = 0; j < IdsAssignments.length; j++) {
+            Debug.lg(IdsAssignments[j].completed);
+            if(IdsAssignments[j].completed) {
+                assignmentsToSer.push(IdsAssignments[j]);
+            }
+        }
+    }
+    Debug.lg("serializing : ");
+    Debug.lg(assignmentsToSer);
+    // reserializeAssignmentsArray(assignmentsToSer);
+}
+
+// synch method - WOW
+function markAsCompleted(courseId, assignmentName) {
+    Debug.lg("marking as completed");
+    Debug.lg(loadedAssignmentsTable[courseId][assignmentName]);
+    loadedAssignmentsTable[courseId][assignmentName].completed = true;
+}
+
 //#region helpres
-function reserializeAssignmentsArray(newCourses, success, failure) {
+function reserializeAssignmentsArray(newAssignments, success, failure) {
     window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(cacheRootDir){
         
         cacheRootDir.getFile(assignmentsJsonName, {create : true}, function(file) {
             // write json
-            FileWriter.writeObjToFile(file, newCourses, success, failure);
+            FileWriter.writeObjToFile(file, newAssignments, success, failure);
         
         }, function(error) {
             var commentedError = ErrorCommenter.addCommentPrefix(error, "Error getting file: " + Debug.cacheRootPath + assignmentsJsonName);
@@ -179,6 +209,9 @@ function getSerializedAssignments(success, failure) {
 }
 //#endregion
 
-module.exports.tryGetSerializedAssignments = tryGetSerializedAssignments;
+module.exports.tryLoadSerializedAssignments = tryLoadSerializedAssignments;
 module.exports.saveUserAssignmentsArr = saveUserAssignmentsArr;
 module.exports.update = update;
+module.exports.markAsCompleted = markAsCompleted;
+module.exports.serializeAssignmentsFromMemory = serializeAssignmentsFromMemory;
+

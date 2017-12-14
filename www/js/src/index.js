@@ -58,10 +58,10 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
             AccountManager.savedPasswordValid(function(logPas) {
                 // console.clear();
                 // debugger;
-                AssignmentManager.tryGetSerializedAssignments(function (serializedAssignments) {
+                AssignmentManager.tryLoadSerializedAssignments(function (serializedAssignments) {
                     // Debug.lg("COURSES DESERIALIZED");
-                    Debug.lg("loaded assignments: ");
-                    Debug.lg(serializedAssignments);
+                    // Debug.lg("loaded assignments: ");
+                    // Debug.lg(serializedAssignments);
                     // AssignmentManager.update(serializedAssignments, function(assignmentsData){
                     //     Debug.lg("Constructed ass data from assignments successfully:");
                     //     Debug.lg(assignmentsData);
@@ -69,24 +69,21 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
                     //     // Debug.lge("right place");
                     //     Debug.lge(error);
                     // });
-                    DisteduDownloader.getAllCoursesList((courses) => {
-                        Debug.lg(courses);
-                    }, function(error){
-                        Debug.lg(error);
-                    });
+                    AssignmentManager.serializeAssignmentsFromMemory();
+                    
 
                 }, function(error) {
                     Debug.lge("ASSIGNMENTS NOT FOUND : ");
                     Debug.lge(error);
                     // Debug.lge(error);
                     // filter all available user's courses
-                    // AssignmentManager.saveUserAssignmentsArr(TEST_FILTER_COURSES, function(serializedAssignments) {
-                    //     Debug.lg("serialized : ");
-                    //     Debug.lg(serializedAssignments);
+                    AssignmentManager.saveUserAssignmentsArr(TEST_FILTER_COURSES, function(serializedAssignments) {
+                        Debug.lg("serialized : ");
+                        Debug.lg(serializedAssignments);
                         
-                    // }, function(error){
-                    //     Debug.lg(error);
-                    // });
+                    }, function(error){
+                        Debug.lg(error);
+                    });
                 });
                 
             }, function(error) {

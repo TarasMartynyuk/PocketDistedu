@@ -1,10 +1,11 @@
 // #region require
 var AccountManager = require('./Backend/AccountManager');
-var CacheManager = require('./Backend/CacheManager');
 var Debug = require("./Backend/Debug");
 var DisteduDownloader = require("./Backend/DIsteduDownloader");
 var AssignmentManager = require("./Backend/AssignmentManager");
+var AssignmentClass = require('./Backend/data classes/AssignmentClass');
 var DeadlineVCH = require('./Backend/DeadlineValidityChecker');
+var Dedl = require('./Backend/DeadlineValidityChecker');
 
 // #endregion
  var app = {
@@ -17,10 +18,8 @@ var DeadlineVCH = require('./Backend/DeadlineValidityChecker');
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
     
-
     onDeviceReady: function() {
         Debug.init();
-        Debug.lg("DEVICEREADY");
 
         $('#submit').click(function () {
             var login = $('#login').val();
@@ -38,7 +37,7 @@ var DeadlineVCH = require('./Backend/DeadlineValidityChecker');
         });
 
         //TODO: remove later!
-        var filteredCourses = [
+        var TEST_FILTER_COURSES = [
             { id : 189, 
                 course : "JavaScript" 
             },
@@ -46,28 +45,52 @@ var DeadlineVCH = require('./Backend/DeadlineValidityChecker');
                 course : "Основи комп'ютерних алгоритмів на Java" 
             }
         ];
-        $('#test-file').click(function () {
-            AccountManager.savedPasswordValid(function(logPas) {
-                // Debug.lg(logPas.login);
-                // Debug.lg(logPas.password);
-                AssignmentManager.tryLoadSerializedCourses(function () {
-                    Debug.lg("COURSES DESERIALIZED");
-                }, function(error) {
-                    console.clear();
-                    Debug.lge("COURSES NOT FOUND : ");
-                    // Debug.lge(error);
-                    // filter all available user's courses
-                    AssignmentManager.saveUserAssignmentsArr(filteredCourses, function() {
 
+        $('#test-file').click(function () {
+
+            // Debug.lg(AssignmentClass.AssignmentProto);
+            // Debug.lg(new AssignmentClass.Assignment("asdsaddsa"));
+            // return;
+
+            // return;
+            console.clear();
+            // Dedl.printDate();
+            AccountManager.savedPasswordValid(function(logPas) {
+                // console.clear();
+                // debugger;
+                AssignmentManager.tryGetSerializedAssignments(function (serializedAssignments) {
+                    // Debug.lg("COURSES DESERIALIZED");
+                    Debug.lg("loaded assignments: ");
+                    Debug.lg(serializedAssignments);
+                    // AssignmentManager.update(serializedAssignments, function(assignmentsData){
+                    //     Debug.lg("Constructed ass data from assignments successfully:");
+                    //     Debug.lg(assignmentsData);
+                    // }, function(error){
+                    //     // Debug.lge("right place");
+                    //     Debug.lge(error);
+                    // });
+                    DisteduDownloader.getAllCoursesList((courses) => {
+                        Debug.lg(courses);
                     }, function(error){
                         Debug.lg(error);
                     });
+
+                }, function(error) {
+                    Debug.lge("ASSIGNMENTS NOT FOUND : ");
+                    Debug.lge(error);
+                    // Debug.lge(error);
+                    // filter all available user's courses
+                    // AssignmentManager.saveUserAssignmentsArr(TEST_FILTER_COURSES, function(serializedAssignments) {
+                    //     Debug.lg("serialized : ");
+                    //     Debug.lg(serializedAssignments);
+                        
+                    // }, function(error){
+                    //     Debug.lg(error);
+                    // });
                 });
-                // AssignmentManager.saveUserCoursesTable();
                 
             }, function(error) {
                 Debug.lge(error);
-                // Debug.lge("message" + error.message);
             });
         });
     }
@@ -76,4 +99,5 @@ var DeadlineVCH = require('./Backend/DeadlineValidityChecker');
 $(function(){
     app.initialize();
 });
+
 module.exports.App = app;

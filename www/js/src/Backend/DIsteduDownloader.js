@@ -38,11 +38,13 @@ function getAllCoursesList(success, failure) {
                 Debug.lg(courseContainer.children());
                 courseContainer.children().each(function(index, element){
 
+                    
+                    var name = element.firstChild.data;
                     var id = element.attribs.href.match(/[0-9]+$/i)[0];
                     // Debug.lg(course);
                     allCourses.push({ 
                         id : id, 
-                        course : course
+                        course : name
                         }
                     );
                 });
@@ -104,7 +106,6 @@ function getCourseAssignments(courseId) {
                                 courseAssignments.push(assignment);
                             }
                         }
-                        // Debug.lg(courseAssignments);
                         resolve(courseAssignments);
                     }, function(error){
                         reject(error);
@@ -117,9 +118,14 @@ function getCourseAssignments(courseId) {
     
 }
 
-// success takes HTML string with all courses resources as arg
-function getCourseResourcesPage(course, success) {
-    
+// success takes [url, url] of download urls for all week's resources
+function getWeekResources(week) {
+
+}
+
+// success takes a - description as arg
+function getAssignmentDescription(assignment, success, failure) {
+
 }
 
 //#region 

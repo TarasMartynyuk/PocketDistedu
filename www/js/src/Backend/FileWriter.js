@@ -5,9 +5,11 @@ var ErrorCommenter = require('./ErrorCommenter');
 function write(fileEntry, dataObj, success, failure) {
     // Create a FileWriter object for our FileEntry (log.txt).
 
-    Debug.lg("dataobj " + dataObj);
+    // Debug.lg("dataobj " + dataObj);
     // delete prev contents
-    fileEntry.createWriter((fileWriter)=>fileWriter.truncate(0));
+    fileEntry.createWriter(function(fileWriter) {
+        fileWriter.truncate(0);
+    });
 
     fileEntry.createWriter(function (fileWriter) {
 
@@ -27,8 +29,8 @@ function write(fileEntry, dataObj, success, failure) {
 }
 
 function writeObjToFile(file, obj, success, failure) {
-    Debug.lg("JSONNED obj : " + JSON.stringify(obj));
-    write(file, new Blob([JSON.stringify(obj)]), failure);
+    // Debug.lg("JSONNED obj : " + JSON.stringify(obj));
+    write(file, new Blob([JSON.stringify(obj)]), success, failure);
 }
 
 module.exports.write = write;

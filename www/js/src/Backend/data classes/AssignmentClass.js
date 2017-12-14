@@ -56,6 +56,7 @@ Assignment.prototype = {
 // name : string, 
 // deadline : Data object (JS)
 // assignmentDescription : string - html file
+// id : Number (NOT the courseID!!)
 // resources : [ url, url... ] - pdf or doc(mostly))
 function AssignmentData(assignment, onInitEnd) {
     this.name = assignment.name;

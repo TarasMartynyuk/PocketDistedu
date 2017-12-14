@@ -125,15 +125,32 @@ function getWeekResources(week) {
 
 // success takes a - description as arg
 function getAssignmentDescription(assignment, success, failure) {
-    // AccountManager.getAuthPage(function(afterLoginPage) {
-    //     var assignmentPageUrl = assignmentPageTemplate + assignment.
+    AccountManager.getAuthPage(function(afterLoginPage) {
+
+        // Debug.lg(assignment);
+        // Debug.lg("id : " + assignment.id);
+        var assignmentPageUrl = assignmentPageTemplate + assignment.id;
+
+        getPage(assignmentPageUrl, function(assignmentUrl){
+
+            var cher = cheerio.load(assignmentUrl);
+            var descrHtml = cher('#intro').html();
+            
+            // success(descrHtml);
+            // Debug.lg(descrHtml);
+            $('#console').append($(descrHtml));
+
+
+        }, function (error){
+            failure(error);
+        })
         
-    // }, function(error){
-    //     failure(error);
-    // });
+    }, function(error){
+        failure(error);
+    });
 }
 
-//#region 
+//#region helpers
 // success takes returned html as arg
 function getPage(url, success, failure) {
     $.ajax({
@@ -166,11 +183,6 @@ function getAssignmentFromRow(cheeredRow, week, courseId) {
 
     var deadlineString = deadlineNode.firstChild.data;
     var name = aTableNode.firstChild.firstChild.data;
-    // Debug.lg(row);
-    Debug.lg("url : " + hrefURL);
-    // Debug.lg("deadlineString : ");
-    // Debug.lg(deadlineString);
-    // Debug.lg(name);
 
     // create a date object to represent deadline
     var deadlineDate = DateParser.parseUkrDateStr(deadlineString);
@@ -185,6 +197,7 @@ function getAssignmentFromRow(cheeredRow, week, courseId) {
 //#endregion
 module.exports.getAllCoursesList = getAllCoursesList;
 module.exports.getCourseAssignments = getCourseAssignments;
-// module.exports.getCourseResourcesPage = getCourseResourcesPage;
+module.exports.getWeekResources = getWeekResources;
+module.exports.getAssignmentDescription = getAssignmentDescription;
 
 

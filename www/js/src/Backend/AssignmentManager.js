@@ -138,10 +138,10 @@ function serializeAssignmentsFromMemory(success, failure) {
 }
 
 // synch method - WOW
-function markAsCompleted(courseId, assignmentName) {
+function markAsCompleted(assignmentId) {
     
     for(var i = 0; i < loadedAssignments.length; i++) {
-        if(loadedAssignments[i].courseId == courseId && loadedAssignments[i].name == assignmentName) {
+        if(loadedAssignments[i].id == assignmentId) {
             Debug.lg("marking as completed");
             Debug.lg(loadedAssignments[i]);
             loadedAssignments[i].completed = true;

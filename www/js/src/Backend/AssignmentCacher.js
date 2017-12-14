@@ -23,7 +23,13 @@ function cacheAssignmentData(assignment, success, failure) {
 
         rootDirEntry.getDirectory(idDirName, {create : true}, function(idDirEntry){
             // create file for assignment
-            Diste
+            DisteduDownloader.getAssignmentDescription(assignment, function(descr) {
+
+                success();
+                Debug.lg("cached data for " + assignment.name);
+            }, function(error){
+                failure(error);
+            })
 
 
         }, function(error){
@@ -32,9 +38,8 @@ function cacheAssignmentData(assignment, success, failure) {
     }, function(error){
         failure(error);
     });
-    Debug.lg("cached data for " + assignment.name);
-    // Debug.lg(assignment);
-    success();
+    
+    
 }
 
 function deleteAssignmentData(assignment, success, failure, deleteWeekDir) {

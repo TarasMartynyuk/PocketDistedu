@@ -9,23 +9,18 @@ var AssignmentClass = require('./data classes/AssignmentClass');
 
 var assignmentsJsonName = "userAssignments.json";
 
-// {id : {name : assignment}}
-var loadedAssignmentsTable = {};
+// array of Assignments
+var loadedAssignments;
 //#endregion
 
-// if success loads serialized assignments into memory
-// is run when userCourses where successfully retrieved from disk
+// loads serialized assignments into memory
+// success is run if loadedAssignments where successfully retrieved from disk
 // failure takes string representing error
 function tryLoadSerializedAssignments(success, failure) {
     getSerializedAssignments(function(serAssignments) {
-        for(var i = 0; i < serAssignments.length; i++) {
-            if(loadedAssignmentsTable[serAssignments[i].courseId] == undefined) {
-                loadedAssignmentsTable[serAssignments[i].courseId] = {};
-            }
-            loadedAssignmentsTable[serAssignments[i].courseId] [serAssignments[i].name] = serAssignments[i];
-        }
+        loadedAssignments = serAssignments;
         Debug.lg("loaded : ");
-        Debug.lg(loadedAssignmentsTable);
+        Debug.lg(loadedAssignments);
 
         success();
     }, function(error) {
@@ -33,41 +28,41 @@ function tryLoadSerializedAssignments(success, failure) {
     });
 }
 
-// assignmentArr is array os serialized assignments
+// updates status for all asignments in loadedAssignments
 // delete courses that are marked as done from disk(if deadline has passed), 
 // cache those that are not longer than week from now
-function update(assignmentArr, success, failure) {
+function update(success, failure) {
     
     var dataConstructPromises = [];
     var deleteCachePromises = [];
     // for ALL the assignments,  if their deadline is in next week
     // construct data from them, caching if they are not yet cached
-    for(var i = 0; i < assignmentArr.length; i++) {
+    for(var i = 0; i < loadedAssignments.length; i++) {
 
         // Debug.lg("deadline");
-        // Debug.lg(assignmentArr[i].deadline);
+        // Debug.lg(loadedAssignments[i].deadline);
 
-        var deadlineStatus = DeadlineValChecker.deadlineStatus(assignmentArr[i].deadline);
+        var deadlineStatus = DeadlineValChecker.deadlineStatus(loadedAssignments[i].deadline);
 
         if(deadlineStatus < 0) {
             // delete from disk and from array
-            deleteCachePromises.push(assignmentArr[i].deleteCache());
+            deleteCachePromises.push(loadedAssignments[i].deleteCache());
             // Debug.lg("deleting cache for ");
-            // Debug.lg(assignmentArr[i]);
+            // Debug.lg(loadedAssignments[i]);
 
         } else if(deadlineStatus == 0 ) {
             // cache
             var dataConstructPromise;
-            if(assignmentArr[i].cached) {   
-                dataConstructPromise = assignmentArr[i].fetchData(deadlineStatus);
+            if(loadedAssignments[i].cached) {   
+                dataConstructPromise = loadedAssignments[i].fetchData(deadlineStatus);
                 
             } else {    // cache before fetching data from disk 
                 // Debug.lg("constructin right away : ");
-                // Debug.lg(assignmentArr[i]);
+                // Debug.lg(loadedAssignments[i]);
                 
-                // assignmentArr[i].TEST();
-                var assignmentRef = assignmentArr[i];
-                dataConstructPromise = assignmentArr[i].cache()
+                // loadedAssignments[i].TEST();
+                var assignmentRef = loadedAssignments[i];
+                dataConstructPromise = loadedAssignments[i].cache()
                     .then(function() {
                         return assignmentRef.fetchData(deadlineStatus);
                     });
@@ -132,22 +127,14 @@ function saveUserAssignmentsArr(filteredCourses, success, failure) {
 // serializes current contents of loadedAssignments var
 function serializeAssignmentsFromMemory(success, failure) {
     var assignmentsToSer = [];
-    var ids = Object.keys(loadedAssignmentsTable);
-    for(var i = 0; i < ids.length; i++) {
-        var IdsAssignments = Object.values(loadedAssignmentsTable[ids[i]]);
-        // Debug.lg(loadedAssignmentsTable[ids[i]]);
-        // Debug.lg(IdsAssignments);
-
-        for(var j = 0; j < IdsAssignments.length; j++) {
-            Debug.lg(IdsAssignments[j].completed);
-            if(IdsAssignments[j].completed) {
-                assignmentsToSer.push(IdsAssignments[j]);
-            }
+    for(var i = 0; i < loadedAssignments.length; i++) {
+        if(loadedAssignments[i].completed == false) {
+            assignmentsToSer.push(loadedAssignments[i]);
         }
     }
-    Debug.lg("serializing : ");
-    Debug.lg(assignmentsToSer);
-    // reserializeAssignmentsArray(assignmentsToSer);
+    
+    // Debug.lg(assignmentsToSer);
+    reserializeAssignmentsArray(assignmentsToSer, success, failure);
 }
 
 // synch method - WOW

@@ -57,19 +57,20 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
             // Dedl.printDate();
             AccountManager.savedPasswordValid(function(logPas) {
                 // console.clear();
-                // debugger;
-                AssignmentManager.tryLoadSerializedAssignments(function (serializedAssignments) {
-                    // Debug.lg("COURSES DESERIALIZED");
-                    // Debug.lg("loaded assignments: ");
-                    // Debug.lg(serializedAssignments);
-                    // AssignmentManager.update(serializedAssignments, function(assignmentsData){
-                    //     Debug.lg("Constructed ass data from assignments successfully:");
-                    //     Debug.lg(assignmentsData);
-                    // }, function(error){
-                    //     // Debug.lge("right place");
+                AssignmentManager.tryLoadSerializedAssignments(function () {
+                    Debug.lg("COURSES DESERIALIZED");
+                    AssignmentManager.update(function(assignmentsData){
+                        Debug.lg("Constructed ass data from assignments successfully:");
+                        Debug.lg(assignmentsData);
+                    }, function(error){
+                        // Debug.lge("right place");
+                        Debug.lge(error);
+                    });
+                    // AssignmentManager.serializeAssignmentsFromMemory(function () {
+                    //     Debug.lg("serializing : ");
+                    // }, function(erorr){
                     //     Debug.lge(error);
                     // });
-                    AssignmentManager.serializeAssignmentsFromMemory();
                     
 
                 }, function(error) {
@@ -77,9 +78,9 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
                     Debug.lge(error);
                     // Debug.lge(error);
                     // filter all available user's courses
-                    AssignmentManager.saveUserAssignmentsArr(TEST_FILTER_COURSES, function(serializedAssignments) {
+                    AssignmentManager.saveUserAssignmentsArr(TEST_FILTER_COURSES, function() {
                         Debug.lg("serialized : ");
-                        Debug.lg(serializedAssignments);
+                        Debug.lg();
                         
                     }, function(error){
                         Debug.lg(error);

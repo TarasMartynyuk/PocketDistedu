@@ -139,9 +139,14 @@ function serializeAssignmentsFromMemory(success, failure) {
 
 // synch method - WOW
 function markAsCompleted(courseId, assignmentName) {
-    Debug.lg("marking as completed");
-    Debug.lg(loadedAssignmentsTable[courseId][assignmentName]);
-    loadedAssignmentsTable[courseId][assignmentName].completed = true;
+    
+    for(var i = 0; i < loadedAssignments.length; i++) {
+        if(loadedAssignments[i].courseId == courseId && loadedAssignments[i].name == assignmentName) {
+            Debug.lg("marking as completed");
+            Debug.lg(loadedAssignments[i]);
+            loadedAssignments[i].completed = true;
+        }
+    }
 }
 
 //#region helpres

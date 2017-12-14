@@ -59,18 +59,19 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
                 // console.clear();
                 AssignmentManager.tryLoadSerializedAssignments(function () {
                     Debug.lg("COURSES DESERIALIZED");
-                    AssignmentManager.update(function(assignmentsData){
-                        Debug.lg("Constructed ass data from assignments successfully:");
-                        Debug.lg(assignmentsData);
-                    }, function(error){
-                        // Debug.lge("right place");
-                        Debug.lge(error);
-                    });
-                    // AssignmentManager.serializeAssignmentsFromMemory(function () {
-                    //     Debug.lg("serializing : ");
-                    // }, function(erorr){
+                    // AssignmentManager.update(function(assignmentsData){
+                    //     Debug.lg("Constructed ass data from assignments successfully:");
+                    //     Debug.lg(assignmentsData);
+                    // }, function(error){
+                    //     // Debug.lge("right place");
                     //     Debug.lge(error);
                     // });
+                    AssignmentManager.markAsCompleted(131, "Практичне 12.1");
+                    AssignmentManager.serializeAssignmentsFromMemory(function () {
+                        Debug.lg("serializing : ");
+                    }, function(erorr){
+                        Debug.lge(error);
+                    });
                     
 
                 }, function(error) {

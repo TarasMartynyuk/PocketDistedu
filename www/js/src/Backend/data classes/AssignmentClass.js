@@ -7,12 +7,14 @@ var Debug = require('../Debug');
 // cached - wether its data exists on disk
 // assignmentDatapath - global path to the directory where task and resources are stored
 // function Assignment
-function Assignment (name, deadline, week, courseId) {
+function Assignment (name, deadline, week, id, courseId) {
         this.name = name,
+        this.id = id;
         this.deadline = deadline,
     
         this.week = week; // Number
         this.courseId = courseId
+
         this.cached = false;
         this.AssignmentDataPath = null; // null if not cached
         this.completed = false;

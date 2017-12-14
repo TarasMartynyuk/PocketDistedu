@@ -66,13 +66,19 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
                     //     // Debug.lge("right place");
                     //     Debug.lge(error);
                     // });
-                    AssignmentManager.markAsCompleted(131, "Практичне 12.1");
-                    AssignmentManager.serializeAssignmentsFromMemory(function () {
-                        Debug.lg("serializing : ");
-                    }, function(erorr){
-                        Debug.lge(error);
+                    // AssignmentManager.markAsCompleted(131, "Практичне 12.1");
+                    // AssignmentManager.serializeAssignmentsFromMemory(function () {
+                    //     Debug.lg("serializing : ");
+                    // }, function(erorr){
+                    //     Debug.lge(error);
+                    // });
+                    AssignmentManager.saveUserAssignmentsArr(TEST_FILTER_COURSES, function() {
+                        Debug.lg("serialized : ");
+                        // Debug.lg();
+                        
+                    }, function(error){
+                        Debug.lg(error);
                     });
-                    
 
                 }, function(error) {
                     Debug.lge("ASSIGNMENTS NOT FOUND : ");
@@ -81,7 +87,7 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
                     // filter all available user's courses
                     AssignmentManager.saveUserAssignmentsArr(TEST_FILTER_COURSES, function() {
                         Debug.lg("serialized : ");
-                        Debug.lg();
+                        // Debug.lg();
                         
                     }, function(error){
                         Debug.lg(error);

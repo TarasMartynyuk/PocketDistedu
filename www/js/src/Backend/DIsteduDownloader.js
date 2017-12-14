@@ -10,7 +10,7 @@ var DeadlineValidityChecker = require('./DeadlineValidityChecker');
 // just add water(crossed out) id
 var allAssignmentsPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/index.php?id=";
 var allResourcesPageTemplate = "http://distedu.ukma.edu.ua/mod/resource/index.php?id=";
-var assignmentPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/";
+var assignmentPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/view.php?id="; // add assignment id
 //#endregion
 
 // success takes list of all courses of user (using his data from AccountManager) as argument, 
@@ -125,7 +125,12 @@ function getWeekResources(week) {
 
 // success takes a - description as arg
 function getAssignmentDescription(assignment, success, failure) {
-
+    // AccountManager.getAuthPage(function(afterLoginPage) {
+    //     var assignmentPageUrl = assignmentPageTemplate + assignment.
+        
+    // }, function(error){
+    //     failure(error);
+    // });
 }
 
 //#region 
@@ -155,11 +160,14 @@ function getAssignmentFromRow(cheeredRow, week, courseId) {
     var aTableNode = cheeredRow(hrefNodeSelector)[0]; // has a in children
     var deadlineNode = cheeredRow(deadlineNodeSelector)[0]; // has text in children
 
-    var hrefURL = assignmentPageTemplate + aTableNode.firstChild.attribs.href;
+    var hrefURL = aTableNode.firstChild.attribs.href;
+    var id = hrefURL.match(/[0-9]+$/i)[0];
+    
+
     var deadlineString = deadlineNode.firstChild.data;
     var name = aTableNode.firstChild.firstChild.data;
     // Debug.lg(row);
-    // Debug.lg("url : " + hrefURL);
+    Debug.lg("url : " + hrefURL);
     // Debug.lg("deadlineString : ");
     // Debug.lg(deadlineString);
     // Debug.lg(name);
@@ -170,7 +178,7 @@ function getAssignmentFromRow(cheeredRow, week, courseId) {
     var diff = DeadlineValidityChecker.deadlineStatus(deadlineDate);
     // Debug.lg("diff : " + diff);
     return diff >= 0 ?
-        new AssignmentClass.Assignment(name, deadlineDate, week, courseId) :
+        new AssignmentClass.Assignment(name, deadlineDate, week, id, courseId) :
         null;
 }
 

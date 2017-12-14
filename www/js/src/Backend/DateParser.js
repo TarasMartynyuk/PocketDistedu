@@ -18,7 +18,7 @@ var monthsLookup = {
 // input - string of type "понеділок  11 грудня 2017, 23:55"
 // returns date object
 function parseUkrDateStr(dateStr) {
-    var regexp = /^([а-яА-ЯіІїЇєЄщЩ]+)  ([0-9]+) ([а-яА-ЯіІїЇєЄщЩ]+) ([0-9]+), ([0-9]+):([0-9]+)$/i;
+    var regexp = /^([а-яА-ЯіІїЇєЄщЩ]+) +([0-9]+) +([а-яА-ЯіІїЇєЄщЩ]+) +([0-9]+), +([0-9]+):([0-9]+)$/i;
     var match = regexp.exec(dateStr);
     var day = match[2];
     var month = monthsLookup[match[3]];

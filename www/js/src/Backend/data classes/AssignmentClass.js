@@ -2,12 +2,13 @@ var CacheManager = require('../CacheManager');
 
 // name : string, 
 // deadline : Data object (JS)
+// week : Number
 // assignmentDatapath - global path to the directory where task and resources are stored
-function Assignment(name, deadline) {
+function Assignment(name, deadline, week) {
     this.name = name,
     this.deadline = deadline,
 
-    
+    this.week = week; // Number
     this.cached = false;
     this.AssignmentDataPath = null;
 }

@@ -4,7 +4,7 @@ var CacheManager = require('./Backend/CacheManager');
 var Debug = require("./Backend/Debug");
 var DisteduDownloader = require("./Backend/DIsteduDownloader");
 var AssignmentManager = require("./Backend/AssignmentManager");
-var DateParser = require('./Backend/DateParser');
+var DeadlineVCH = require('./Backend/DeadlineValidityChecker');
 
 // #endregion
  var app = {
@@ -51,13 +51,10 @@ var DateParser = require('./Backend/DateParser');
                 //     // });
                 // });
                 // AssignmentManager.saveUserCoursesTable();
-            
                 DisteduDownloader.getCourseAssignments(131, function(){
                 }, function(error){
                     Debug.lg(error);
                 });
-                // var dateObj = DateParser.parseUkrDateStr("понеділок  11 грудня 2017, 23:55");
-                // Debug.lg(dateObj);
             }, function(error) {
                 Debug.lge(error);
                 // Debug.lge("message" + error.message);

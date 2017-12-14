@@ -1,6 +1,5 @@
 //#region defs 
 var Debug = require("./Debug");
-var CourseClass = require('./data classes/CourseClass');
 var FileWriter = require('./FileWriter');
 var DisteduDownloader = require('./DIsteduDownloader');
 var ErrorCommenter = require('./ErrorCommenter');
@@ -51,8 +50,6 @@ function saveUserCoursesTable() {
     // var currDate = 
 
     for(var i = 0; i < filteredCourses.length; i++) {
-        // Debug.lg(filteredCourses[i].id);
-        // Debug.lg(filteredCourses[i].course);
         // use course id to get all future assignments and construct idToAssignmentArr
         DisteduDownloader.getCourseAssignments(filteredCourses[i].id, function(futureAssignments){
 

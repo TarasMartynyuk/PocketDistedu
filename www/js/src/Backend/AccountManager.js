@@ -88,10 +88,10 @@ function passwordValid(logPas, success, failure) {
 //#region helpers
 // success takes authPage and logPas as arguments 
 function tryAuthenticate(logPas, success, failure) {
-    Debug.lg("AUTH  FUNC");
+    // Debug.lg("AUTH  FUNC");
     // Debug.lg(" AUTH\n" + logPas.login);
     // Debug.lg(" AUTH\n" + logPas.password);
-    Debug.lg("posting to : " + loginURL);
+    // Debug.lg("posting to : " + loginURL);
     $.ajax({
         type : "POST",
         url : loginURL, // + "NOT FVASADJKASDJKLAS",

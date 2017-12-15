@@ -43,28 +43,32 @@ function update(success, failure) {
         // Debug.lg(loadedAssignments[i].deadline);
 
         var deadlineStatus = DeadlineValChecker.deadlineStatus(loadedAssignments[i].deadline);
-
+        
         if(deadlineStatus < 0) {
             // delete from disk and from array
             deleteCachePromises.push(loadedAssignments[i].deleteCache());
             // Debug.lg("deleting cache for ");
             // Debug.lg(loadedAssignments[i]);
 
-        } else if(deadlineStatus == 0 ) {
+        } else if (deadlineStatus == 0 ) {
             // cache
             var dataConstructPromise;
-            if(loadedAssignments[i].cached) {   
-                dataConstructPromise = loadedAssignments[i].fetchData(deadlineStatus);
+            if(false) {  // TODO: change to loadedAssignments[i].cached
+                Debug.lg("fetching rith away :" + loadedAssignments[i].name);   
+                dataConstructPromise = loadedAssignments[i].fetchData();
                 
             } else {    // cache before fetching data from disk 
+                Debug.lg("caching first :" + loadedAssignments[i].name);   
                 
                 // Debug.lg(loadedAssignments[i].name);
                 
-                // loadedAssignments[i].TEST();
                 var assignmentRef = loadedAssignments[i];
                 dataConstructPromise = loadedAssignments[i].cache()
                     .then(function() {
-                        return assignmentRef.fetchData(deadlineStatus);
+                        // Debug.lg("in then after cache()");
+                        return assignmentRef.fetchData();
+                    }).catch(function(error){
+                        failure(error);
                     });
             }
 
@@ -74,13 +78,15 @@ function update(success, failure) {
 
     Promise.all(deleteCachePromises).then(function(promisesResult) {
         Debug.lg("Deleted cache data for outdated assignments successfully:");
-        // Debug.lg(promisesResult);
         
     }).then(function(){
         return Promise.all(dataConstructPromises);
 
     }).then(function(assignmentsData) {
-        Debug.lg("")
+        // Debug.lg("assignments after update: ");
+        Debug.lg("successfully fullfilled data promises: ");
+        Debug.lg(assignmentsData);
+
         success(assignmentsData);
     }).catch(function(error){
         failure(error);

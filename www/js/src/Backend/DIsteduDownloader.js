@@ -8,11 +8,39 @@ var AssignmentClass = require('./data classes/AssignmentClass');
 var DeadlineValidityChecker = require('./DeadlineValidityChecker');
 
 // just add water(crossed out) id
-var allAssignmentsPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/index.php?id=";
-var allResourcesPageTemplate = "http://distedu.ukma.edu.ua/mod/resource/index.php?id=";
+var allAssignmentsPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/index.php?id="; // add course id
+var allResourcesPageTemplate = "http://distedu.ukma.edu.ua/mod/resource/index.php?id="; // add course id
 var assignmentPageTemplate = "http://distedu.ukma.edu.ua/mod/assignment/view.php?id="; // add assignment id
 //#endregion
+var testUrl = "http://distedu.ukma.edu.ua/mod/resource/view.php?id=10017";
 
+function test() {
+    AccountManager.getAuthPage( function(afterLoginPage) {
+        
+        // getPage(testUrl, function(responce){
+        //     Debug.lg("responce : ");
+        //     Debug.lg(responce);
+        // }, function(error) {
+        //     Debug.lg(error);
+        // });
+        // var xhttp = new XMLHttpRequest();
+        var testUrl = window.location.href;
+        var xhttp = new XMLHttpRequest();
+        xhttp.open('HEAD', testUrl);
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == this.DONE) {
+                console.log(this.status);
+                var contentType = this.getResponseHeader("Content-Type");
+                Debug.lg(contentType);
+            }
+        };
+        xhttp.send();
+
+    }, function(error) {
+        Debug.lg(error);
+    });
+
+}
 // success takes list of all courses of user (using his data from AccountManager) as argument, 
 // in format [{id, course}]
 function getAllCoursesList(success, failure) {
@@ -55,9 +83,7 @@ function getAllCoursesList(success, failure) {
             }
         });
 
-    }, function(error){
-        failure(error);
-    });
+    }, failure);
 }
 
 // returnes a promise, whose resolve takes courses assignments as arg
@@ -118,18 +144,62 @@ function getCourseAssignments(courseId) {
     
 }
 
+// TODO: add proper naming
+var done = false;
 // success takes [url, url] of download urls for all week's resources
-function getWeekResources(week) {
+function getResourcesUrls(assignment, success, failure) {
 
+    AccountManager.getAuthPage(function(afterLoginPage) {
+        var courseResourcesPage = allResourcesPageTemplate + assignment.courseId;
+
+        getPage(courseResourcesPage, function(resPage){
+
+            var cher = cheerio.load(resPage);
+            // Debug.lg(cher('title').text());
+            weekStr = assignment.week.toString();
+
+            var weekCells = cher('.cell.c0');
+            var weekStartFound = false;
+            var urls = [];
+            if(done == false) {
+                weekCells.each(function(index, element){
+                    // Debug.lg(element.nextSibling.firstChild.attribs.href);
+                    Debug.lg(element.nextSibling.firstChild);
+                    
+                    done = true;
+                    if(weekStartFound) {    // add until encounter next week's node
+                        if(element.firstChild != null) {    // another week's start
+                            return false;
+                        } else {
+                                // add url
+                             urls.push(element);
+                             
+                        }
+
+                    } else {    // check if it is weekStart cell
+                        if(element.firstChild != null && element.firstChild.data == weekStr){ 
+                            // we found the first cell with our week's resources
+                            weekStartFound = true;
+                             // add url
+                             urls.push(element);
+
+                        }
+                    }
+                });
+                done = true;
+                Debug.lg("THe one : ");
+                Debug.lg(urls);
+            }
+            
+            success(urls);
+        }, failure);
+    }, failure);
 }
-
 // success takes a - description as arg
 function getAssignmentDescription(assignment, success, failure) {
-    Debug.lg("getAssignmentDescription");
+    // Debug.lg("getAssignmentDescription");
     AccountManager.getAuthPage(function(afterLoginPage) {
 
-        // Debug.lg(assignment);
-        // Debug.lg("id : " + assignment.id);
         var assignmentPageUrl = assignmentPageTemplate + assignment.id;
 
         getPage(assignmentPageUrl, function(assignmentUrl) {
@@ -138,8 +208,6 @@ function getAssignmentDescription(assignment, success, failure) {
             var descrHtml = cher('#intro').html();
             
             success(descrHtml);
-            // Debug.lg(descrHtml);
-            // $('#console').append($(descrHtml));
 
         }, function (error){
             failure(error);
@@ -197,7 +265,7 @@ function getAssignmentFromRow(cheeredRow, week, courseId) {
 //#endregion
 module.exports.getAllCoursesList = getAllCoursesList;
 module.exports.getCourseAssignments = getCourseAssignments;
-module.exports.getWeekResources = getWeekResources;
+module.exports.getResourcesUrls = getResourcesUrls;
 module.exports.getAssignmentDescription = getAssignmentDescription;
-
+module.exports.test = test;
 

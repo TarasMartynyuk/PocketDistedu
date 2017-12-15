@@ -54,18 +54,27 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
 
             // return;
             console.clear();
+            
             // Dedl.printDate();
             AccountManager.savedPasswordValid(function(logPas) {
                 // console.clear();
                 AssignmentManager.tryLoadSerializedAssignments(function () {
                     Debug.lg("COURSES DESERIALIZED");
+
                     AssignmentManager.update(function(assignmentsData){
                         Debug.lg("Constructed ass data from assignments successfully:");
                         Debug.lg(assignmentsData);
+                        AssignmentManager.serializeAssignmentsFromMemory(function(){
+                            Debug.lg("success");
+                        }, function(error){
+                            Debug.lg(error);
+                        })
+
                     }, function(error){
                         // Debug.lge("right place");
                         Debug.lge(error);
                     });
+                    // DisteduDownloader.test();
                     // AssignmentManager.markAsCompleted(131, "Практичне 12.1");
                     // AssignmentManager.serializeAssignmentsFromMemory(function () {
                     //     Debug.lg("serializing : ");
@@ -85,13 +94,13 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
                     Debug.lge(error);
                     // Debug.lge(error);
                     // filter all available user's courses
-                    // AssignmentManager.saveUserAssignmentsArr(TEST_FILTER_COURSES, function() {
-                    //     Debug.lg("serialized : ");
-                    //     // Debug.lg();
+                    AssignmentManager.saveUserAssignmentsArr(TEST_FILTER_COURSES, function() {
+                        Debug.lg("serialized : ");
+                        // Debug.lg();
                         
-                    // }, function(error){
-                    //     Debug.lg(error);
-                    // });
+                    }, function(error){
+                        Debug.lg(error);
+                    });
                 });
                 
             }, function(error) {

@@ -16,16 +16,27 @@ function Assignment (name, deadline, week, id, courseId) {
         this.courseId = courseId
 
         this.cached = false;
-        this.AssignmentDataPath = null; // null if not cached
+        this.AssignmentDescrPath = null; 
         this.completed = false;
     }
+
 
 Assignment.prototype = {
     
     // returns a PROMISE with AssignmentData as resolve arg
-    fetchData : function (deadline) {
+    fetchData : function () {
+        Debug.lg("fetchData");
+        
+        var thisRef = this;
         return new Promise(function(resolve, reject) {
-            resolve("AssignmentData for assignment :" + deadline);
+
+            AssignmentCacher.getAssignmentData(thisRef, function(assignmentData) {
+                Debug.lg("GOT DATA : ");
+                // Debug.lg(assignmentData);
+                resolve(assignmentData);
+                
+            }, reject);
+            resolve("AssignmentData for assignment :");
         });
     },
     // creates a dir for its courseID, if not present
@@ -36,7 +47,8 @@ Assignment.prototype = {
     cache : function() {
         var thisRef = this;
         return new Promise(function (resolve, reject) {
-            Debug.lg("caching from class : ");
+            
+            // Debug.lg("caching from class : ");
             AssignmentCacher.cacheAssignmentData(thisRef, resolve, reject);
         });
     },
@@ -58,9 +70,10 @@ Assignment.prototype = {
 // assignmentDescription : string - html file
 // id : Number (NOT the courseID!!)
 // resources : [ url, url... ] - pdf or doc(mostly))
-function AssignmentData(assignment, onInitEnd) {
-    this.name = assignment.name;
-    this.deadline = assignment.deadline;
+function AssignmentData(name, deadline, descr) {
+    this.name = name;
+    this.deadline = deadline;
+    this.descr = descr;
     // get string from file
     
 }

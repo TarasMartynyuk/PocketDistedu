@@ -1,6 +1,6 @@
 // #region require
 var AccountManager = require('../Backend/AccountManager');
-var CacheManager = require('../Backend/CacheManager');
+// var CacheManager = require('../Backend/CacheManager');
 var Debug = require("../Backend/Debug");
 var DisteduDownloader = require("../Backend/DIsteduDownloader");
 

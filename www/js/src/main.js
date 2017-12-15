@@ -4,6 +4,7 @@ var CacheManager = require('./Backend/CacheManager');
 var Debug = require("./Backend/Debug");
 var DisteduDownloader = require("./Backend/DIsteduDownloader");
 
+
 // #endregion
 
 
@@ -19,16 +20,15 @@ $(function(){
 
 $(window).on('load', function() {
     // alert(window.location.href);
-    if (window.location.href == "http://192.168.0.103:3000/") {
-        Debug.init();
 
-        // AccountManager.rewriteLoginPassWord('malitska', 'Ba.ndersnatched7105');
+
+    if (window.location.href == "http://192.168.0.104:3000/") {
+        Debug.init();
 
         AccountManager.savedPasswordValid(function (logPas) {
             Debug.lg(logPas.login);
             Debug.lg(logPas.password);
 
-            // DisteduDownloader.getAllCoursesList();
         }, function (error) {
             Debug.lge(error);
 
@@ -38,5 +38,7 @@ $(window).on('load', function() {
 
         });
     }
+
+    if (window.location.href.substr(-1) == "#") window.location.href = './';
 });
 

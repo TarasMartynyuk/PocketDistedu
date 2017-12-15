@@ -36,7 +36,7 @@ Assignment.prototype = {
     cache : function() {
         var thisRef = this;
         return new Promise(function (resolve, reject) {
-            
+            Debug.lg("caching from class : ");
             AssignmentCacher.cacheAssignmentData(thisRef, resolve, reject);
         });
     },

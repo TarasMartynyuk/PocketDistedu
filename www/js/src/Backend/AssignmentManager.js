@@ -57,8 +57,8 @@ function update(success, failure) {
                 dataConstructPromise = loadedAssignments[i].fetchData(deadlineStatus);
                 
             } else {    // cache before fetching data from disk 
-                // Debug.lg("constructin right away : ");
-                // Debug.lg(loadedAssignments[i]);
+                
+                // Debug.lg(loadedAssignments[i].name);
                 
                 // loadedAssignments[i].TEST();
                 var assignmentRef = loadedAssignments[i];
@@ -80,10 +80,10 @@ function update(success, failure) {
         return Promise.all(dataConstructPromises);
 
     }).then(function(assignmentsData) {
-        
+        Debug.lg("")
         success(assignmentsData);
     }).catch(function(error){
-        Debug.lge(error);
+        failure(error);
     });
 
     //TODO: re-serialize the array with outdated assignments missing!

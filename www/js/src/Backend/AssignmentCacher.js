@@ -16,21 +16,13 @@ var resourcesDir = "Resources";
 // creates a folder for assignment with all needed data cached there
 function cacheAssignmentData(assignment, success, failure) {
     
-    var idDirName = courseIdDirTemplate + assignment.id;
-    var weekDirName = weekDirTemplate + assignment.id;
-
-    window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(rootDirEntry){
-
-        rootDirEntry.getDirectory(idDirName, {create : true}, function(idDirEntry){
-            // create file for assignment
-            DisteduDownloader.getAssignmentDescription(assignment, function(descr) {
-
-                success();
-                Debug.lg("cached data for " + assignment.name);
-            }, function(error){
-                failure(error);
-            })
-
+    getWeekDir(assignment, true, function(weekDirentry) {
+        // create file for assignment
+        DisteduDownloader.getAssignmentDescription(assignment, function(descr) {
+    
+            Debug.lg("cached data for " + assignment.name);
+            Debug.lg(descr);
+            createFile(weekDirentry, assignment.name + ".txt", descr, success, failure);
 
         }, function(error){
             failure(error);
@@ -38,8 +30,6 @@ function cacheAssignmentData(assignment, success, failure) {
     }, function(error){
         failure(error);
     });
-    
-    
 }
 
 function deleteAssignmentData(assignment, success, failure, deleteWeekDir) {
@@ -49,12 +39,37 @@ function deleteAssignmentData(assignment, success, failure, deleteWeekDir) {
 }
 
 //#region helpers
+// success recieves weekDir for this assignment as arg,
+// if allowCreation is true, CREATES this dir if it does not exist,
+// else throwes error if the path does not exist
+function getWeekDir(assignment, allowCreation, success, failure) {
+    window.resolveLocalFileSystemURL(Debug.cacheRootPath, function(rootDirEntry){
+        
+        var idDirName = courseIdDirTemplate + assignment.courseId;
+        rootDirEntry.getDirectory(idDirName, {create : allowCreation}, function(idDirEntry){
+
+            var weekDirName = weekDirTemplate + assignment.week;
+            idDirEntry.getDirectory(weekDirName, {create : allowCreation}, function(weekDirEntry){
+            
+                success(weekDirEntry);
+            
+            }, function(error){
+                failure(error);
+            });
+
+        }, function(error){
+            failure(error);
+        });
+
+    }, function(error){
+        failure(error);
+    });
+}
+
 // onCreatedCallback recieves created dir as argument
 function createDirectory(parentDirEntry, newDirName, onCreatedCallback, failure) {
-    onCreatedCallback = onCreatedCallback || function(dirEntry) {
-        Debug.lg('created dir ' + dirEntry.toURL());
-    };
-    parentDirEntry.getDirectory(newDirName, { create: true }, onCreatedCallback, function(error){
+    
+    parentDirEntry.getDirectory(newDirName, { create: true, exclusive : true }, onCreatedCallback, function(error){
         commentedError = ErrorCommenter.addCommentPrefix(error, "Error creating dir : " + parentDirEntry + newDirName);
         newDirName(error);
     });

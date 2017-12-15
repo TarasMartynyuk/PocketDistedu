@@ -125,21 +125,21 @@ function getWeekResources(week) {
 
 // success takes a - description as arg
 function getAssignmentDescription(assignment, success, failure) {
+    Debug.lg("getAssignmentDescription");
     AccountManager.getAuthPage(function(afterLoginPage) {
 
         // Debug.lg(assignment);
         // Debug.lg("id : " + assignment.id);
         var assignmentPageUrl = assignmentPageTemplate + assignment.id;
 
-        getPage(assignmentPageUrl, function(assignmentUrl){
+        getPage(assignmentPageUrl, function(assignmentUrl) {
 
             var cher = cheerio.load(assignmentUrl);
             var descrHtml = cher('#intro').html();
             
-            // success(descrHtml);
+            success(descrHtml);
             // Debug.lg(descrHtml);
-            $('#console').append($(descrHtml));
-
+            // $('#console').append($(descrHtml));
 
         }, function (error){
             failure(error);

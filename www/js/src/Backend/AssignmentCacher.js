@@ -20,13 +20,17 @@ function cacheAssignmentData(assignment, success, failure) {
         // create file for assignment
         DisteduDownloader.getAssignmentDescription(assignment, function(descr) {
     
-            Debug.lg("cached data for " + assignment.name);
-            Debug.lg(descr);
+            Debug.lg("fetched html descr for " + assignment.name);
+            // Debug.lg(descr);
             createFile(weekDirentry, assignment.name + ".txt", descr, success, failure);
 
         }, function(error){
             failure(error);
         });
+
+        // download resources, if needed
+        // weekDirentry.getDirectory(resourcesDir, {create : false}, )
+
     }, function(error){
         failure(error);
     });
@@ -75,12 +79,14 @@ function createDirectory(parentDirEntry, newDirName, onCreatedCallback, failure)
     });
 }
 
+// TODO: rewrite with exclusive + checks!
 function createFile(parentDirEntry, filename, contents, onCreatedCallback, failure) {
-    parentDirEntry.getFile(filename, {create : true, exclusive : true}, function (fileEntry){
+    parentDirEntry.getFile(filename, {create : true, exclusive : false}, function (fileEntry){
         FileWriter.write(fileEntry, contents, onCreatedCallback, failure);
 
     }, function (error){
-        failure(ErrorCommenter.addCommentPrefix(error, "Error creating file for assignment"));
+        Debug.lge("error in createFile");
+        failure(error);
     });
 }
 //#endregion

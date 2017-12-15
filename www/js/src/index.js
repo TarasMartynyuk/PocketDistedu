@@ -64,11 +64,12 @@ var Dedl = require('./Backend/DeadlineValidityChecker');
                     AssignmentManager.update(function(assignmentsData){
                         Debug.lg("Constructed ass data from assignments successfully:");
                         Debug.lg(assignmentsData);
+
                         AssignmentManager.serializeAssignmentsFromMemory(function(){
-                            Debug.lg("success");
+                            Debug.lg("serialized from memory");
                         }, function(error){
                             Debug.lg(error);
-                        })
+                        });
 
                     }, function(error){
                         // Debug.lge("right place");

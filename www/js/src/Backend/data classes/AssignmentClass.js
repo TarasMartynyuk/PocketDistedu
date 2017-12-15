@@ -20,7 +20,6 @@ function Assignment (name, deadline, week, id, courseId) {
         this.completed = false;
     }
 
-
 Assignment.prototype = {
     
     // returns a PROMISE with AssignmentData as resolve arg
@@ -36,7 +35,7 @@ Assignment.prototype = {
                 resolve(assignmentData);
                 
             }, reject);
-            resolve("AssignmentData for assignment :");
+            // resolve("AssignmentData for assignment :");
         });
     },
     // creates a dir for its courseID, if not present

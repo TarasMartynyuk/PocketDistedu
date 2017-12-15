@@ -53,7 +53,7 @@ function update(success, failure) {
         } else if (deadlineStatus == 0 ) {
             // cache
             var dataConstructPromise;
-            if(false) {  // TODO: change to loadedAssignments[i].cached
+            if(loadedAssignments[i].cached) {  // TODO: change to loadedAssignments[i].cached
                 Debug.lg("fetching rith away :" + loadedAssignments[i].name);   
                 dataConstructPromise = loadedAssignments[i].fetchData();
                 
@@ -84,8 +84,8 @@ function update(success, failure) {
 
     }).then(function(assignmentsData) {
         // Debug.lg("assignments after update: ");
-        Debug.lg("successfully fullfilled data promises: ");
-        Debug.lg(assignmentsData);
+        // Debug.lg("successfully fullfilled data promises: ");
+        // Debug.lg(assignmentsData);
 
         success(assignmentsData);
     }).catch(function(error){

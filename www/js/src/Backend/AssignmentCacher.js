@@ -6,6 +6,7 @@ var Debug = require('./Debug');
 var ErrorCommenter = require('./ErrorCommenter');
 var FileWriter = require('./FileWriter');
 var DisteduDownloader = require('./DIsteduDownloader');
+var AssignmentClass = require('./data classes/AssignmentClass');
 
 // root for all asignments directories - emplty when week is not cached
 var courseIdDirTemplate = "CourseId"; // add number to end
@@ -29,7 +30,8 @@ function getAssignmentData(assignment, success, failure) {
             reader.onloadend = function (e) {
                 // Debug.lg("read : " + this.result);
                 Debug.lg("read html for : " + assignment.name);
-                success(this.result);
+                var data = new AssignmentClass.AssignmentData(assignment.name, assignment.deadline, this.result);
+                success(data);
             };
             reader.readAsText(file);
 
@@ -126,9 +128,10 @@ function cacheDescr(assignment, weekDirEntry, success, failure) {
             assignment.AssignmentDescrPath = weekDirEntry.toURL() + validName;
             assignment.cached = true;
             success();
+
+
         }, failure);
 
-        success();
     },  failure);
 }
 
